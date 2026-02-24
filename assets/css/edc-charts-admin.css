@@ -1,0 +1,26 @@
+/* EDC Charts – Admin styles for chart edit screen */
+
+/* Metabox form fields and help text */
+.edc-field { margin-bottom: 12px; }
+.edc-field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.edc-field input[type="text"],
+.edc-field input[type="number"],
+.edc-field select,
+.edc-field textarea {
+  width: 100%;
+  max-width: 720px;
+}
+.edc-field textarea { min-height: 60px; }
+.edc-field .wp-editor-wrap { max-width: 720px; }
+.edc-help { color: #666; font-size: 12px; margin-top: 6px; }
+/* Bar colors: picker + add button + chips */
+.edc-bar-colors-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.edc-bar-colors-row input[type="color"] { width: 44px; height: 36px; padding: 2px; cursor: pointer; border: 1px solid #8c8f94; border-radius: 4px; }
+.edc-bar-colors-row .button { height: 36px; }
+.edc-bar-colors-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; min-height: 28px; }
+.edc-bar-color-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #f0f0f1; border: 1px solid #c3c4c7; }
+.edc-bar-color-chip-swatch { width: 18px; height: 18px; border-radius: 3px; border: 1px solid rgba(0,0,0,.2); flex-shrink: 0; }
+.edc-bar-color-chip-remove { cursor: pointer; padding: 0 4px; color: #50575e; font-weight: bold; line-height: 1; }
+.edc-bar-color-chip-remove:hover { color: #d63638; }
+/* CSV upload: select/remove buttons row */
+.edc-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

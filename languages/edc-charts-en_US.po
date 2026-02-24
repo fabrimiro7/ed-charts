@@ -1,0 +1,257 @@
+# Copyright (C) 2025 EDC Charts
+# This file is distributed under the same license as the EDC Charts package.
+msgid ""
+msgstr ""
+"Project-Id-Version: EDC Charts 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-24 12:00+0000\n"
+"PO-Revision-Date: 2025-02-24 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: edc-charts\n"
+
+#: includes/cpt.php:6
+#: includes/cpt.php:16
+msgid "EDC Charts"
+msgstr "EDC Charts"
+
+#: includes/cpt.php:7
+msgid "EDC Chart"
+msgstr "EDC Chart"
+
+#: includes/cpt.php:8
+msgid "Add New"
+msgstr "Add New"
+
+#: includes/cpt.php:9
+msgid "Add New Chart"
+msgstr "Add New Chart"
+
+#: includes/cpt.php:10
+msgid "Edit Chart"
+msgstr "Edit Chart"
+
+#: includes/cpt.php:11
+msgid "New Chart"
+msgstr "New Chart"
+
+#: includes/cpt.php:12
+msgid "View Chart"
+msgstr "View Chart"
+
+#: includes/cpt.php:13
+msgid "Search Charts"
+msgstr "Search Charts"
+
+#: includes/cpt.php:14
+msgid "No charts found"
+msgstr "No charts found"
+
+#: includes/cpt.php:15
+msgid "No charts found in Trash"
+msgstr "No charts found in Trash"
+
+#: includes/admin.php:8
+msgid "EDC Chart Settings"
+msgstr "EDC Chart Settings"
+
+#: includes/admin.php:20
+#: includes/admin.php:307
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/admin.php:36
+#: includes/admin.php:87
+msgid "Select or upload CSV"
+msgstr "Select or upload CSV"
+
+#: includes/admin.php:37
+msgid "Use this file"
+msgstr "Use this file"
+
+#: includes/admin.php:38
+msgid "File selected"
+msgstr "File selected"
+
+#: includes/admin.php:39
+#: includes/admin.php:88
+msgid "Remove"
+msgstr "Remove"
+
+#: includes/admin.php:40
+msgid "Remove color"
+msgstr "Remove color"
+
+#: includes/admin.php:41
+#: includes/admin.php:170
+msgid "Choose color"
+msgstr "Choose color"
+
+#: includes/admin.php:68
+msgid "Data source"
+msgstr "Data source"
+
+#: includes/admin.php:70
+msgid "Google Sheets URL"
+msgstr "Google Sheets URL"
+
+#: includes/admin.php:71
+msgid "Upload CSV file"
+msgstr "Upload CSV file"
+
+#: includes/admin.php:76
+msgid "Google Sheets CSV URL"
+msgstr "Google Sheets CSV URL"
+
+#: includes/admin.php:79
+msgid "In Google Sheets: File → Share → Publish to web → choose sheet → format CSV → publish → paste the link here."
+msgstr "In Google Sheets: File → Share → Publish to web → choose sheet → format CSV → publish → paste the link here."
+
+#: includes/admin.php:84
+msgid "Uploaded CSV file"
+msgstr "Uploaded CSV file"
+
+#: includes/admin.php:94
+msgid "Chart type"
+msgstr "Chart type"
+
+#: includes/admin.php:96
+msgid "Line"
+msgstr "Line"
+
+#: includes/admin.php:97
+msgid "Bar"
+msgstr "Bar"
+
+#: includes/admin.php:102
+msgid "CSV has header row?"
+msgstr "CSV has header row?"
+
+#: includes/admin.php:104
+msgid "Yes"
+msgstr "Yes"
+
+#: includes/admin.php:105
+msgid "No"
+msgstr "No"
+
+#: includes/admin.php:110
+msgid "CSV delimiter"
+msgstr "CSV delimiter"
+
+#: includes/admin.php:112
+msgid "Comma (,)"
+msgstr "Comma (,)"
+
+#: includes/admin.php:113
+msgid "Semicolon (;)"
+msgstr "Semicolon (;)"
+
+#: includes/admin.php:115
+msgid "If your CSV looks \"all in one column\", try semicolon."
+msgstr "If your CSV looks \"all in one column\", try semicolon."
+
+#: includes/admin.php:119
+msgid "X column index (0-based)"
+msgstr "X column index (0-based)"
+
+#: includes/admin.php:121
+msgid "Example: 0 means first column is used as labels (dates, names, etc.)"
+msgstr "Example: 0 means first column is used as labels (dates, names, etc.)"
+
+#: includes/admin.php:125
+msgid "Series column indices (comma-separated, 0-based)"
+msgstr "Series column indices (comma-separated, 0-based)"
+
+#: includes/admin.php:127
+msgid "Example: \"1,2\" means second and third columns are chart series."
+msgstr "Example: \"1,2\" means second and third columns are chart series."
+
+#: includes/admin.php:131
+msgid "Cache minutes"
+msgstr "Cache minutes"
+
+#: includes/admin.php:133
+msgid "How often the plugin refetches the CSV. Avoid fetching on every page load."
+msgstr "How often the plugin refetches the CSV. Avoid fetching on every page load."
+
+#: includes/admin.php:137
+msgid "Text below X axis"
+msgstr "Text below X axis"
+
+#: includes/admin.php:148
+msgid "Free text shown below the horizontal axis of the chart."
+msgstr "Free text shown below the horizontal axis of the chart."
+
+#: includes/admin.php:152
+msgid "Text beside Y axis"
+msgstr "Text beside Y axis"
+
+#: includes/admin.php:163
+msgid "Free text shown to the left of the chart, beside the vertical axis (vertically centered)."
+msgstr "Free text shown to the left of the chart, beside the vertical axis (vertically centered)."
+
+#: includes/admin.php:167
+msgid "Bar colors"
+msgstr "Bar colors"
+
+#: includes/admin.php:168
+msgid "e.g. #1e3a5f or #1e3a5f, #2563eb, #3b82f6"
+msgstr "e.g. #1e3a5f or #1e3a5f, #2563eb, #3b82f6"
+
+#: includes/admin.php:171
+msgid "Add color"
+msgstr "Add color"
+
+#: includes/admin.php:174
+msgid "For bar charts only. One color (e.g. #1e3a5f) or multiple comma-separated colors, one per series. Use the picker above to add a color. Leave empty for default palette."
+msgstr "For bar charts only. One color (e.g. #1e3a5f) or multiple comma-separated colors, one per series. Use the picker above to add a color. Leave empty for default palette."
+
+#: includes/helpers.php:83
+msgid "No CSV file uploaded. Upload a CSV file in the chart settings."
+msgstr "No CSV file uploaded. Upload a CSV file in the chart settings."
+
+#: includes/helpers.php:87
+msgid "CSV file not found or not readable."
+msgstr "CSV file not found or not readable."
+
+#: includes/helpers.php:94
+msgid "The selected file is not a valid CSV."
+msgstr "The selected file is not a valid CSV."
+
+#: includes/helpers.php:98
+msgid "The CSV file is empty."
+msgstr "The CSV file is empty."
+
+#: includes/helpers.php:103
+msgid "Missing CSV URL. Set it in the chart settings."
+msgstr "Missing CSV URL. Set it in the chart settings."
+
+#: includes/helpers.php:115
+msgid "Failed to fetch CSV: %s"
+msgstr "Failed to fetch CSV: %s"
+
+#: includes/helpers.php:120
+msgid "CSV request failed with HTTP %s"
+msgstr "CSV request failed with HTTP %s"
+
+#: includes/helpers.php:125
+msgid "CSV response is empty."
+msgstr "CSV response is empty."
+
+#: includes/helpers.php:143
+msgid "CSV contains no rows."
+msgstr "CSV contains no rows."
+
+#: includes/helpers.php:175
+msgid "Series %s"
+msgstr "Series %s"
+
+#: includes/rest.php:35
+msgid "Chart not found."
+msgstr "Chart not found."

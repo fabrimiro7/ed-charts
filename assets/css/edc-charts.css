@@ -1,0 +1,79 @@
+.edc-chart-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Chart layout: grid with Y caption (left), canvas (center), X caption (below) */
+.edc-chart-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: stretch;
+  min-width: 0;
+}
+
+/* Canvas: ECharts container */
+.edc-chart-canvas {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Y-axis caption (vertical text beside chart) */
+.edc-chart-caption-y {
+  grid-column: 1;
+  grid-row: 1;
+  margin-right: 8px;
+  max-width: 8em;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: #555;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* X-axis caption (below chart) */
+.edc-chart-caption-x {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: #555;
+  text-align: center;
+}
+
+.edc-chart-caption-x p:first-child,
+.edc-chart-caption-y p:first-child {
+  margin-top: 0;
+}
+
+.edc-chart-caption-x p:last-child,
+.edc-chart-caption-y p:last-child {
+  margin-bottom: 0;
+}
+
+/* Error message when chart data fails to load */
+.edc-chart-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.07);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+/* Mobile: fixed canvas height on small screens */
+@media (max-width: 768px) {
+  .edc-chart-canvas {
+    height: 280px !important;
+  }
+}
