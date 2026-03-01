@@ -86,6 +86,16 @@ function edc_render_chart_metabox($post) {
   </div>
 
   <div class="edc-field">
+    <label for="edc_y_axis_fit_data">
+      <input type="checkbox" id="edc_y_axis_fit_data" name="edc_y_axis_fit_data" value="1" <?php checked($meta['y_axis_fit_data'], '1'); ?>>
+      <?php echo esc_html__('Fit Y axis to data range', 'edc-charts'); ?>
+    </label>
+    <div class="edc-help">
+      <?php echo esc_html__('If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0.', 'edc-charts'); ?>
+    </div>
+  </div>
+
+  <div class="edc-field">
     <label for="edc_has_header"><?php echo esc_html__('CSV has header row?', 'edc-charts'); ?></label>
     <select id="edc_has_header" name="edc_has_header">
       <option value="1" <?php selected($meta['has_header'], '1'); ?>><?php echo esc_html__('Yes', 'edc-charts'); ?></option>
@@ -185,6 +195,7 @@ function edc_save_chart_metabox($post_id, $post) {
     'csv_url' => 'text',
     'csv_attachment_id' => 'int',
     'chart_type' => 'text',
+    'y_axis_fit_data' => 'text',
     'has_header' => 'text',
     'delimiter' => 'text',
     'x_col' => 'int',
@@ -200,6 +211,11 @@ function edc_save_chart_metabox($post_id, $post) {
   foreach ($fields as $key => $type) {
     $form_key = 'edc_' . $key;
     $val = isset($_POST[$form_key]) ? wp_unslash($_POST[$form_key]) : '';
+
+    if ($key === 'y_axis_fit_data') {
+      // Checkbox: treat presence as "1", absence as "0"
+      $val = isset($_POST['edc_y_axis_fit_data']) ? '1' : '0';
+    }
 
     if ($type === 'int') {
       $val = (string) max(0, intval($val));

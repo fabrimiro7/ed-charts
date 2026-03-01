@@ -44,6 +44,7 @@
     const rotateX = parseInt(meta.rotate_x || "0", 10) || 0;
     const showZoom = meta.show_data_zoom === "1";
     const stackBars = meta.stack === "1";
+     const fitYAxis = meta.y_axis_fit_data === "1";
     const barColorsRaw = (meta.bar_colors || "").trim();
     const barColors = barColorsRaw
       ? barColorsRaw.split(/[\s,]+/).map(function (c) { return c.trim(); }).filter(Boolean)
@@ -116,6 +117,27 @@
       },
       series,
     };
+
+    if (fitYAxis && Array.isArray(datasets) && datasets.length > 0) {
+      const allValues = [];
+      datasets.forEach((ds) => {
+        if (!ds || !Array.isArray(ds.data)) return;
+        ds.data.forEach((v) => {
+          if (typeof v === "number" && !Number.isNaN(v)) {
+            allValues.push(v);
+          }
+        });
+      });
+
+      if (allValues.length > 0) {
+        const dataMin = Math.min.apply(null, allValues);
+        const dataMax = Math.max.apply(null, allValues);
+        if (Number.isFinite(dataMin) && Number.isFinite(dataMax)) {
+          option.yAxis.min = dataMin - 1;
+          option.yAxis.max = dataMax + 1;
+        }
+      }
+    }
 
     if (showZoom) {
       option.dataZoom = [

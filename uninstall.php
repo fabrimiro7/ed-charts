@@ -29,6 +29,7 @@ if ($charts) {
     delete_post_meta($id, 'edc_caption_below_x');
     delete_post_meta($id, 'edc_caption_left_y');
     delete_post_meta($id, 'edc_bar_colors');
+    delete_post_meta($id, 'edc_y_axis_fit_data');
 
     delete_transient('edc_chart_data_' . $id);
   }

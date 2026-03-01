@@ -210,6 +210,14 @@ msgstr ""
 msgid "For bar charts only. One color (e.g. #1e3a5f) or multiple comma-separated colors, one per series. Use the picker above to add a color. Leave empty for default palette."
 msgstr ""
 
+#: includes/admin.php:88
+msgid "Fit Y axis to data range"
+msgstr ""
+
+#: includes/admin.php:94
+msgid "If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0."
+msgstr ""
+
 #: includes/helpers.php:83
 msgid "No CSV file uploaded. Upload a CSV file in the chart settings."
 msgstr ""

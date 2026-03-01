@@ -29,6 +29,7 @@ function edc_get_chart_meta(int $post_id): array {
     'caption_below_x' => '',      // testo sotto l'asse x
     'caption_left_y' => '',       // testo laterale all'asse y
     'bar_colors' => '',           // colori barre (es. #1e3a5f oppure #1e3a5f,#2563eb)
+    'y_axis_fit_data' => '0',     // "1" | "0" scala Y adattata ai dati
   ];
 
   $out = [];

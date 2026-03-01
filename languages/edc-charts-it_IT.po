@@ -212,6 +212,14 @@ msgstr "Aggiungi colore"
 msgid "For bar charts only. One color (e.g. #1e3a5f) or multiple comma-separated colors, one per series. Use the picker above to add a color. Leave empty for default palette."
 msgstr "Solo per grafici a barre. Un colore (es. #1e3a5f) o più colori separati da virgola, uno per serie. Usa il selettore qui sopra per aggiungere un colore. Lascia vuoto per la palette predefinita."
 
+#: includes/admin.php:88
+msgid "Fit Y axis to data range"
+msgstr "Adatta l'asse Y all'intervallo dei dati"
+
+#: includes/admin.php:94
+msgid "If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0."
+msgstr "Se attivata, l'asse Y parte da (valore minimo − 1) e arriva a (valore massimo + 1) invece che partire da 0."
+
 #: includes/helpers.php:83
 msgid "No CSV file uploaded. Upload a CSV file in the chart settings."
 msgstr "Nessun file CSV caricato. Carica un file CSV nelle impostazioni del grafico."
