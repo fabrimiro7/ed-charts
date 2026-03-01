@@ -114,6 +114,22 @@
   if (dataSource) dataSource.addEventListener('change', toggleSourceFields);
   toggleSourceFields();
 
+  /* ── Y axis fit: show/hide min/max inputs ── */
+  var yAxisFitCheckbox = document.getElementById('edc_y_axis_fit_data');
+  var yAxisRangeField = document.getElementById('edc-field-y-axis-range');
+
+  function toggleYAxisRangeFields() {
+    if (yAxisRangeField) {
+      yAxisRangeField.style.display = (yAxisFitCheckbox && yAxisFitCheckbox.checked) ? '' : 'none';
+    }
+  }
+
+  if (yAxisFitCheckbox) {
+    yAxisFitCheckbox.addEventListener('change', toggleYAxisRangeFields);
+    yAxisFitCheckbox.addEventListener('click', toggleYAxisRangeFields);
+  }
+  toggleYAxisRangeFields();
+
   if (uploadBtn && typeof wp !== 'undefined' && wp.media) {
     var frame = null;
     uploadBtn.addEventListener('click', function () {

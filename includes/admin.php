@@ -95,6 +95,16 @@ function edc_render_chart_metabox($post) {
     </div>
   </div>
 
+  <div class="edc-field" id="edc-field-y-axis-range" style="<?php echo $meta['y_axis_fit_data'] === '1' ? '' : 'display:none;'; ?>">
+    <label for="edc_y_axis_min"><?php echo esc_html__('Y axis minimum', 'edc-charts'); ?></label>
+    <input type="number" step="any" id="edc_y_axis_min" name="edc_y_axis_min" value="<?php echo esc_attr($meta['y_axis_min']); ?>" placeholder="">
+    <label for="edc_y_axis_max" style="display:block; margin-top:8px;"><?php echo esc_html__('Y axis maximum', 'edc-charts'); ?></label>
+    <input type="number" step="any" id="edc_y_axis_max" name="edc_y_axis_max" value="<?php echo esc_attr($meta['y_axis_max']); ?>" placeholder="">
+    <div class="edc-help">
+      <?php echo esc_html__('Leave empty to use values calculated from data.', 'edc-charts'); ?>
+    </div>
+  </div>
+
   <div class="edc-field">
     <label for="edc_has_header"><?php echo esc_html__('CSV has header row?', 'edc-charts'); ?></label>
     <select id="edc_has_header" name="edc_has_header">
@@ -196,6 +206,8 @@ function edc_save_chart_metabox($post_id, $post) {
     'csv_attachment_id' => 'int',
     'chart_type' => 'text',
     'y_axis_fit_data' => 'text',
+    'y_axis_min' => 'text',
+    'y_axis_max' => 'text',
     'has_header' => 'text',
     'delimiter' => 'text',
     'x_col' => 'int',
@@ -215,6 +227,11 @@ function edc_save_chart_metabox($post_id, $post) {
     if ($key === 'y_axis_fit_data') {
       // Checkbox: treat presence as "1", absence as "0"
       $val = isset($_POST['edc_y_axis_fit_data']) ? '1' : '0';
+    }
+
+    if ($key === 'y_axis_min' || $key === 'y_axis_max') {
+      $val = trim((string) $val);
+      $val = $val === '' ? '' : (string) floatval($val);
     }
 
     if ($type === 'int') {

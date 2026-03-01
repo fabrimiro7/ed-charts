@@ -30,6 +30,8 @@ if ($charts) {
     delete_post_meta($id, 'edc_caption_left_y');
     delete_post_meta($id, 'edc_bar_colors');
     delete_post_meta($id, 'edc_y_axis_fit_data');
+    delete_post_meta($id, 'edc_y_axis_min');
+    delete_post_meta($id, 'edc_y_axis_max');
 
     delete_transient('edc_chart_data_' . $id);
   }

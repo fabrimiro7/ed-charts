@@ -132,9 +132,13 @@
       if (allValues.length > 0) {
         const dataMin = Math.min.apply(null, allValues);
         const dataMax = Math.max.apply(null, allValues);
+        const parsedMin = parseFloat(meta.y_axis_min, 10);
+        const parsedMax = parseFloat(meta.y_axis_max, 10);
+        const useCustomMin = Number.isFinite(parsedMin);
+        const useCustomMax = Number.isFinite(parsedMax);
         if (Number.isFinite(dataMin) && Number.isFinite(dataMax)) {
-          option.yAxis.min = dataMin - 0.2;
-          option.yAxis.max = dataMax + 0.2;
+          option.yAxis.min = useCustomMin ? parsedMin : (dataMin - 0.2);
+          option.yAxis.max = useCustomMax ? parsedMax : (dataMax + 0.2);
         }
       }
     }
