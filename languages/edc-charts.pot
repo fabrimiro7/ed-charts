@@ -215,7 +215,7 @@ msgid "Fit Y axis to data range"
 msgstr ""
 
 #: includes/admin.php:94
-msgid "If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0."
+msgid "If enabled, the Y axis starts at (min value − 0.2) and ends at (max value + 0.2) instead of starting from 0."
 msgstr ""
 
 #: includes/helpers.php:83

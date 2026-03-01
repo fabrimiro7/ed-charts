@@ -91,7 +91,7 @@ function edc_render_chart_metabox($post) {
       <?php echo esc_html__('Fit Y axis to data range', 'edc-charts'); ?>
     </label>
     <div class="edc-help">
-      <?php echo esc_html__('If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0.', 'edc-charts'); ?>
+      <?php echo esc_html__('If enabled, the Y axis starts at (min value − 0.2) and ends at (max value + 0.2) instead of starting from 0.', 'edc-charts'); ?>
     </div>
   </div>
 

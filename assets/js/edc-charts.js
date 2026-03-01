@@ -133,8 +133,8 @@
         const dataMin = Math.min.apply(null, allValues);
         const dataMax = Math.max.apply(null, allValues);
         if (Number.isFinite(dataMin) && Number.isFinite(dataMax)) {
-          option.yAxis.min = dataMin - 1;
-          option.yAxis.max = dataMax + 1;
+          option.yAxis.min = dataMin - 0.2;
+          option.yAxis.max = dataMax + 0.2;
         }
       }
     }

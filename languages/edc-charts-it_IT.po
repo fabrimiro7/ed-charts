@@ -217,8 +217,8 @@ msgid "Fit Y axis to data range"
 msgstr "Adatta l'asse Y all'intervallo dei dati"
 
 #: includes/admin.php:94
-msgid "If enabled, the Y axis starts at (min value − 1) and ends at (max value + 1) instead of starting from 0."
-msgstr "Se attivata, l'asse Y parte da (valore minimo − 1) e arriva a (valore massimo + 1) invece che partire da 0."
+msgid "If enabled, the Y axis starts at (min value − 0.2) and ends at (max value + 0.2) instead of starting from 0."
+msgstr "Se attivata, l'asse Y parte da (valore minimo − 0,2) e arriva a (valore massimo + 0,2) invece che partire da 0."
 
 #: includes/helpers.php:83
 msgid "No CSV file uploaded. Upload a CSV file in the chart settings."
