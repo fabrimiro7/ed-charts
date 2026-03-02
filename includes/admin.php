@@ -86,6 +86,16 @@ function edc_render_chart_metabox($post) {
   </div>
 
   <div class="edc-field">
+    <label for="edc_line_smooth">
+      <input type="checkbox" id="edc_line_smooth" name="edc_line_smooth" value="1" <?php checked($meta['line_smooth'], '1'); ?>>
+      <?php echo esc_html__('Linee curve (smooth)', 'edc-charts'); ?>
+    </label>
+    <div class="edc-help">
+      <?php echo esc_html__('If disabled, lines connect points with straight segments (angular).', 'edc-charts'); ?>
+    </div>
+  </div>
+
+  <div class="edc-field">
     <label for="edc_y_axis_fit_data">
       <input type="checkbox" id="edc_y_axis_fit_data" name="edc_y_axis_fit_data" value="1" <?php checked($meta['y_axis_fit_data'], '1'); ?>>
       <?php echo esc_html__('Fit Y axis to data range', 'edc-charts'); ?>
@@ -205,6 +215,7 @@ function edc_save_chart_metabox($post_id, $post) {
     'csv_url' => 'text',
     'csv_attachment_id' => 'int',
     'chart_type' => 'text',
+    'line_smooth' => 'text',
     'y_axis_fit_data' => 'text',
     'y_axis_min' => 'text',
     'y_axis_max' => 'text',
@@ -227,6 +238,10 @@ function edc_save_chart_metabox($post_id, $post) {
     if ($key === 'y_axis_fit_data') {
       // Checkbox: treat presence as "1", absence as "0"
       $val = isset($_POST['edc_y_axis_fit_data']) ? '1' : '0';
+    }
+
+    if ($key === 'line_smooth') {
+      $val = isset($_POST['edc_line_smooth']) ? '1' : '0';
     }
 
     if ($key === 'y_axis_min' || $key === 'y_axis_max') {

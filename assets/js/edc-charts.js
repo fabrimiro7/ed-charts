@@ -29,6 +29,18 @@
   }
 
   /**
+   * Format a number for axis/tooltip display: at most 1 decimal (e.g. 22.4 or 22).
+   * @param {*} value - Value (number or string).
+   * @returns {string} Formatted string or empty if not a finite number.
+   */
+  function roundToMax1Decimal(value) {
+    const num = typeof value === "number" ? value : parseFloat(value, 10);
+    if (!Number.isFinite(num)) return "";
+    const rounded = Math.round(num * 10) / 10;
+    return rounded % 1 === 0 ? String(Math.round(rounded)) : rounded.toFixed(1);
+  }
+
+  /**
    * Build ECharts option object from API payload. Handles grid, series, tooltip, legend,
    * x/y axes, optional dataZoom; adapts layout for narrow containers (< 480px).
    * @param {Object} payload - API response: labels, datasets, chartType, meta.
@@ -45,6 +57,7 @@
     const showZoom = meta.show_data_zoom === "1";
     const stackBars = meta.stack === "1";
      const fitYAxis = meta.y_axis_fit_data === "1";
+    const lineSmooth = meta.line_smooth !== "0";
     const barColorsRaw = (meta.bar_colors || "").trim();
     const barColors = barColorsRaw
       ? barColorsRaw.split(/[\s,]+/).map(function (c) { return c.trim(); }).filter(Boolean)
@@ -69,7 +82,7 @@
       };
 
       if (chartType === "line") {
-        base.smooth = true;
+        base.smooth = lineSmooth;
         base.showSymbol = false;
       }
 
@@ -91,7 +104,7 @@
       tooltip: {
         trigger: "axis",
         axisPointer: { type: (chartType === "line") ? "line" : "shadow" },
-        valueFormatter: (value) => fmtSuffix(value, ySuffix),
+        valueFormatter: (value) => fmtSuffix(roundToMax1Decimal(value), ySuffix),
       },
       legend: {
         show: datasets.length > 1,
@@ -112,7 +125,7 @@
         type: "value",
         name: yLabel || "",
         axisLabel: {
-          formatter: (value) => fmtSuffix(value, ySuffix),
+          formatter: (value) => fmtSuffix(roundToMax1Decimal(value), ySuffix),
         },
       },
       series,

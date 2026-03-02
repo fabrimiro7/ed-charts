@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EDC Charts (Google Sheets CSV)
  * Description: Create interactive charts from Google Sheets published as CSV. Shortcode: [edc_chart id="123"].
- * Version: 0.2.2
+ * Version: 0.2.3
  * Author: Fabrizio Miranda (EfestoDev)
  * Author URI: https://efestodev.com
  * License: GPLv2 or later

@@ -32,6 +32,7 @@ function edc_get_chart_meta(int $post_id): array {
     'y_axis_fit_data' => '0',     // "1" | "0" scala Y adattata ai dati
     'y_axis_min' => '',           // valore minimo asse Y (vuoto = calcolato dai dati)
     'y_axis_max' => '',           // valore massimo asse Y (vuoto = calcolato dai dati)
+    'line_smooth' => '1',         // "1" | "0" linee curve (smooth) o squadrate
   ];
 
   $out = [];
@@ -47,6 +48,7 @@ function edc_get_chart_meta(int $post_id): array {
   $out['chart_type'] = in_array($out['chart_type'], ['line', 'bar'], true) ? $out['chart_type'] : 'line';
   $out['has_header'] = ($out['has_header'] === '0') ? '0' : '1';
   $out['delimiter']  = ($out['delimiter'] === ';') ? ';' : ',';
+  $out['line_smooth'] = ($out['line_smooth'] === '0') ? '0' : '1';
 
   $x = intval($out['x_col']);
   $out['x_col'] = (string) max(0, $x);

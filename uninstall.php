@@ -32,6 +32,7 @@ if ($charts) {
     delete_post_meta($id, 'edc_y_axis_fit_data');
     delete_post_meta($id, 'edc_y_axis_min');
     delete_post_meta($id, 'edc_y_axis_max');
+    delete_post_meta($id, 'edc_line_smooth');
 
     delete_transient('edc_chart_data_' . $id);
   }
