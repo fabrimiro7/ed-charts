@@ -219,6 +219,13 @@
         const ro = new ResizeObserver(() => chart.resize());
         ro.observe(container);
 
+        // if init ran with 0 width (e.g. Elementor flex not yet laid out), force resize when layout settles
+        if (containerWidth === 0) {
+          requestAnimationFrame(function () { chart.resize(); });
+          setTimeout(function () { chart.resize(); }, 100);
+          setTimeout(function () { chart.resize(); }, 300);
+        }
+
         // store references to avoid GC in some themes
         container.__edcChart = chart;
         container.__edcRO = ro;
@@ -239,8 +246,33 @@
   var visibilityObserver = null;
 
   /**
+   * Wait for container to have non-zero width (e.g. after Elementor layout), then call init.
+   * Uses ResizeObserver; fallback timeout 3s to init anyway.
+   */
+  function waitForWidthThenInit(container) {
+    var w = container.getBoundingClientRect().width || container.offsetWidth || 0;
+    if (w > 0) {
+      initOne(container);
+      return;
+    }
+    var timeout = setTimeout(function () {
+      if (container.__edcChart) return;
+      initOne(container);
+    }, 3000);
+    var ro = new ResizeObserver(function () {
+      var width = container.getBoundingClientRect().width || container.offsetWidth || 0;
+      if (width > 0) {
+        ro.disconnect();
+        clearTimeout(timeout);
+        if (!container.__edcChart) initOne(container);
+      }
+    });
+    ro.observe(container);
+  }
+
+  /**
    * Observe container and init chart when it enters viewport (has visible dimensions).
-   * Fixes charts in Elementor sections below the fold or inside widgets that render with 0 width at first paint.
+   * If visible but width is still 0 (Elementor flex), wait for width before init.
    */
   function observeForVisibility(container) {
     if (container.__edcChart || container.__edcObservedForVisibility) return;
@@ -258,7 +290,12 @@
           if (!entry.isIntersecting) return;
           var el = entry.target;
           visibilityObserver.unobserve(el);
-          initOne(el);
+          var w = el.getBoundingClientRect().width || el.offsetWidth || 0;
+          if (w > 0) {
+            initOne(el);
+          } else {
+            waitForWidthThenInit(el);
+          }
         });
       }, { rootMargin: '80px', threshold: 0.01 });
     }
