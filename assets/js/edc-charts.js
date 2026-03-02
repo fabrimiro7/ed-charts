@@ -44,6 +44,162 @@
   }
 
   /**
+   * Format a numeric value for table display (optional thousands separator).
+   * @param {*} value - Value (number or string).
+   * @returns {string}
+   */
+  function formatTableNumber(value) {
+    if (value === null || typeof value === "undefined") return "";
+    const num = typeof value === "number" ? value : parseFloat(String(value).replace(/\./g, "").replace(",", "."), 10);
+    if (!Number.isFinite(num)) return String(value);
+    return num.toLocaleString("it-IT", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  /**
+   * Render table type (n columns): optional title + table with header and rows.
+   * @param {Object} payload - API payload with header, rows, meta.
+   * @param {Element} container - Container element.
+   */
+  function renderTableType(payload, container) {
+    const meta = payload.meta || {};
+    const title = (meta.table_title || "").trim();
+    const header = Array.isArray(payload.header) ? payload.header : [];
+    const rows = Array.isArray(payload.rows) ? payload.rows : [];
+
+    container.classList.add("edc-chart-table-wrap");
+    container.style.height = "auto";
+    let html = "";
+    if (title) {
+      html += '<div class="edc-chart-table-title">' + escapeHtml(title) + "</div>";
+    }
+    html += '<table class="edc-chart-table"><thead><tr>';
+    header.forEach(function (h) {
+      html += "<th scope=\"col\">" + escapeHtml(String(h)) + "</th>";
+    });
+    html += "</tr></thead><tbody>";
+    rows.forEach(function (row) {
+      const cells = Array.isArray(row) ? row : [];
+      html += "<tr>";
+      cells.forEach(function (cell) {
+        const numStr = formatTableNumber(cell);
+        const val = numStr !== "" ? numStr : escapeHtml(String(cell));
+        html += "<td>" + val + "</td>";
+      });
+      html += "</tr>";
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+    container.__edcChart = true;
+  }
+
+  /**
+   * Escape HTML for safe insertion into DOM.
+   * @param {string} s
+   * @returns {string}
+   */
+  function escapeHtml(s) {
+    if (s == null) return "";
+    const div = document.createElement("div");
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  /**
+   * Render table_tabs_year type: tabs (years + Tutti) and per-tab table (Mese, Valore).
+   * @param {Object} payload - API payload with years, dataByYear, meta.
+   * @param {Element} container - Container element.
+   */
+  function renderTableTabsYearType(payload, container) {
+    const meta = payload.meta || {};
+    const valueLabel = (meta.value_column_label || "Valore").trim();
+    const years = Array.isArray(payload.years) ? payload.years : [];
+    const dataByYear = payload.dataByYear || {};
+
+    container.classList.add("edc-tabs-year-wrap");
+    container.style.height = "auto";
+    let html = '<div class="edc-tabs-year-tabs" role="tablist">';
+    years.forEach(function (year, idx) {
+      const id = "edc-tab-" + (container.id || "chart") + "-" + year;
+      const panelId = "edc-panel-" + (container.id || "chart") + "-" + year;
+      const active = idx === 0 ? " active" : "";
+      html += '<button type="button" class="edc-tabs-year-tab' + active + '" role="tab" aria-selected="' + (idx === 0) + '" aria-controls="' + panelId + '" id="' + id + '" data-year="' + escapeHtml(String(year)) + '">' + escapeHtml(String(year)) + "</button>";
+    });
+    const allId = "edc-tab-" + (container.id || "chart") + "-all";
+    const allPanelId = "edc-panel-" + (container.id || "chart") + "-all";
+    html += '<button type="button" class="edc-tabs-year-tab" role="tab" aria-selected="false" aria-controls="' + allPanelId + '" id="' + allId + '" data-year="all">Tutti</button>';
+    html += "</div>";
+
+    html += '<div class="edc-tabs-year-content">';
+
+    // Build "Tutti" rows: all years, each year's rows (month, value)
+    const allRows = [];
+    years.forEach(function (year) {
+      const list = dataByYear[year] || [];
+      list.forEach(function (item) {
+        allRows.push({ month: item.month, value: item.value });
+      });
+    });
+
+    years.forEach(function (year, idx) {
+      const panelId = "edc-panel-" + (container.id || "chart") + "-" + year;
+      const hidden = idx !== 0 ? " hidden" : "";
+      const list = dataByYear[year] || [];
+      html += '<div class="edc-tabs-year-panel' + hidden + '" role="tabpanel" id="' + panelId + '" aria-labelledby="edc-tab-' + (container.id || "chart") + "-" + year + '" data-year="' + escapeHtml(String(year)) + '">';
+      html += buildMonthValueTable(list, valueLabel);
+      html += "</div>";
+    });
+
+    html += '<div class="edc-tabs-year-panel hidden" role="tabpanel" id="' + allPanelId + '" aria-labelledby="' + allId + '" data-year="all">';
+    html += buildMonthValueTable(allRows, valueLabel);
+    html += "</div>";
+
+    html += "</div>";
+    container.innerHTML = html;
+
+    // Tab click: show corresponding panel, update aria-selected and .active
+    const tabs = container.querySelectorAll(".edc-tabs-year-tab");
+    const panels = container.querySelectorAll(".edc-tabs-year-panel");
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        const year = tab.getAttribute("data-year");
+        const panel = container.querySelector('.edc-tabs-year-panel[data-year="' + year + '"]');
+        tabs.forEach(function (t) {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+        panels.forEach(function (p) {
+          p.classList.add("hidden");
+        });
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+        if (panel) {
+          panel.classList.remove("hidden");
+        }
+      });
+    });
+
+    container.__edcChart = true;
+  }
+
+  /**
+   * Build HTML for a table with columns Mese and value (valueLabel as header).
+   * @param {Array} list - Array of { month, value }.
+   * @param {string} valueLabel - Header for value column.
+   * @returns {string}
+   */
+  function buildMonthValueTable(list, valueLabel) {
+    let html = '<table class="edc-chart-table"><thead><tr><th scope="col">Mese</th><th scope="col">' + escapeHtml(valueLabel) + "</th></tr></thead><tbody>";
+    list.forEach(function (item) {
+      const val = item.value !== null && item.value !== undefined && typeof item.value === "number"
+        ? formatTableNumber(item.value)
+        : escapeHtml(String(item.value != null ? item.value : ""));
+      html += "<tr><td>" + escapeHtml(String(item.month || "")) + "</td><td>" + val + "</td></tr>";
+    });
+    html += "</tbody></table>";
+    return html;
+  }
+
+  /**
    * Build ECharts option object from API payload. Handles grid, series, tooltip, legend,
    * x/y axes, optional dataZoom; adapts layout for narrow containers (< 480px).
    * @param {Object} payload - API response: labels, datasets, chartType, meta.
@@ -210,6 +366,18 @@
           return;
         }
 
+        const chartType = payload.chartType || (payload.meta && payload.meta.chart_type) || "line";
+
+        if (chartType === "table") {
+          renderTableType(payload, container);
+          return;
+        }
+
+        if (chartType === "table_tabs_year") {
+          renderTableTabsYearType(payload, container);
+          return;
+        }
+
         const containerWidth = container.getBoundingClientRect().width || container.offsetWidth || 0;
         const chart = echarts.init(container, null, { renderer: "canvas" });
         const option = buildOption(payload, containerWidth);
@@ -336,7 +504,7 @@
   window.EDC_CHARTS.init = initAll;
   window.EDC_CHARTS.resizeAll = function () {
     document.querySelectorAll('div[data-edc-chart-id]').forEach(function (el) {
-      if (el.__edcChart) el.__edcChart.resize();
+      if (el.__edcChart && typeof el.__edcChart.resize === "function") el.__edcChart.resize();
     });
   };
 })();

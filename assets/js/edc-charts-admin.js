@@ -130,6 +130,20 @@
   }
   toggleYAxisRangeFields();
 
+  /* ── Chart type: show/hide table vs tab-by-year fields ── */
+  var chartTypeSelect = document.getElementById('edc_chart_type');
+  var fieldTableTitle = document.getElementById('edc-field-table-title');
+  var fieldTabsYear = document.getElementById('edc-field-tabs-year');
+
+  function toggleChartTypeFields() {
+    var v = chartTypeSelect ? chartTypeSelect.value : 'line';
+    if (fieldTableTitle) fieldTableTitle.style.display = (v === 'table') ? '' : 'none';
+    if (fieldTabsYear) fieldTabsYear.style.display = (v === 'table_tabs_year') ? '' : 'none';
+  }
+
+  if (chartTypeSelect) chartTypeSelect.addEventListener('change', toggleChartTypeFields);
+  toggleChartTypeFields();
+
   if (uploadBtn && typeof wp !== 'undefined' && wp.media) {
     var frame = null;
     uploadBtn.addEventListener('click', function () {

@@ -82,7 +82,36 @@ function edc_render_chart_metabox($post) {
     <select id="edc_chart_type" name="edc_chart_type">
       <option value="line" <?php selected($meta['chart_type'], 'line'); ?>><?php echo esc_html__('Line', 'edc-charts'); ?></option>
       <option value="bar"  <?php selected($meta['chart_type'], 'bar'); ?>><?php echo esc_html__('Bar', 'edc-charts'); ?></option>
+      <option value="table" <?php selected($meta['chart_type'], 'table'); ?>><?php echo esc_html__('Tabella (n colonne)', 'edc-charts'); ?></option>
+      <option value="table_tabs_year" <?php selected($meta['chart_type'], 'table_tabs_year'); ?>><?php echo esc_html__('Tab per anno (mese/valore)', 'edc-charts'); ?></option>
     </select>
+  </div>
+
+  <div class="edc-field edc-chart-type-table" id="edc-field-table-title" style="<?php echo $meta['chart_type'] !== 'table' ? 'display:none;' : ''; ?>">
+    <label for="edc_table_title"><?php echo esc_html__('Titolo tabella', 'edc-charts'); ?></label>
+    <input type="text" id="edc_table_title" name="edc_table_title" value="<?php echo esc_attr($meta['table_title']); ?>" placeholder="<?php echo esc_attr__('e.g. Rendimento annuo del comparto', 'edc-charts'); ?>">
+    <div class="edc-help"><?php echo esc_html__('Opzionale. Testo mostrato sopra la tabella.', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field edc-chart-type-tabs-year" id="edc-field-tabs-year" style="<?php echo $meta['chart_type'] !== 'table_tabs_year' ? 'display:none;' : ''; ?>">
+    <label><?php echo esc_html__('Colonne CSV (0-based)', 'edc-charts'); ?></label>
+    <div class="edc-tabs-year-cols">
+      <div>
+        <label for="edc_year_col"><?php echo esc_html__('Colonna anno', 'edc-charts'); ?></label>
+        <input type="number" min="0" id="edc_year_col" name="edc_year_col" value="<?php echo esc_attr($meta['year_col']); ?>">
+      </div>
+      <div>
+        <label for="edc_month_col"><?php echo esc_html__('Colonna mese', 'edc-charts'); ?></label>
+        <input type="number" min="0" id="edc_month_col" name="edc_month_col" value="<?php echo esc_attr($meta['month_col']); ?>">
+      </div>
+      <div>
+        <label for="edc_value_col"><?php echo esc_html__('Colonna valore', 'edc-charts'); ?></label>
+        <input type="number" min="0" id="edc_value_col" name="edc_value_col" value="<?php echo esc_attr($meta['value_col']); ?>">
+      </div>
+    </div>
+    <label for="edc_value_column_label" style="display:block; margin-top:8px;"><?php echo esc_html__('Etichetta colonna valore', 'edc-charts'); ?></label>
+    <input type="text" id="edc_value_column_label" name="edc_value_column_label" value="<?php echo esc_attr($meta['value_column_label']); ?>" placeholder="<?php echo esc_attr__('e.g. Valore quota (€)', 'edc-charts'); ?>">
+    <div class="edc-help"><?php echo esc_html__('Opzionale. Intestazione della colonna valore in tabella. Se vuoto viene usato l\'header CSV.', 'edc-charts'); ?></div>
   </div>
 
   <div class="edc-field">
@@ -252,6 +281,11 @@ function edc_save_chart_metabox($post_id, $post) {
     'bar_colors' => 'text',
     'value_prefix' => 'text',
     'value_suffix' => 'text',
+    'table_title' => 'text',
+    'year_col' => 'int',
+    'month_col' => 'int',
+    'value_col' => 'int',
+    'value_column_label' => 'text',
   ];
 
   $allowed_csv_mimes = ['text/csv', 'application/csv', 'text/plain', 'application/octet-stream'];
@@ -304,6 +338,14 @@ function edc_save_chart_metabox($post_id, $post) {
 
     if ($key === 'data_source') {
       $val = in_array($val, ['url', 'upload'], true) ? $val : 'url';
+    }
+
+    if ($key === 'chart_type') {
+      $val = in_array($val, ['line', 'bar', 'table', 'table_tabs_year'], true) ? $val : 'line';
+    }
+
+    if ($key === 'year_col' || $key === 'month_col' || $key === 'value_col') {
+      $val = (string) max(0, intval($val));
     }
 
     update_post_meta($post_id, 'edc_' . $key, $val);

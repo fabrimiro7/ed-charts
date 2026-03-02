@@ -20,7 +20,7 @@ function edc_get_chart_meta(int $post_id): array {
     'data_source' => 'url',       // 'url' | 'upload'
     'csv_url' => '',
     'csv_attachment_id' => '',    // attachment ID when data_source = upload
-    'chart_type' => 'line',       // line | bar
+    'chart_type' => 'line',       // line | bar | table | table_tabs_year
     'has_header' => '1',          // "1" | "0"
     'delimiter' => ',',           // ',' or ';'
     'x_col' => '0',              // index as string
@@ -36,6 +36,11 @@ function edc_get_chart_meta(int $post_id): array {
     'line_area_fill' => '0',     // "1" | "0" riempimento area sotto le linee
     'value_prefix' => '',         // prefisso opzionale per valori (es. €)
     'value_suffix' => '',         // suffisso opzionale per valori (es. %)
+    'table_title' => '',          // titolo sopra la tabella (tipo table)
+    'year_col' => '0',            // indice colonna anno (tipo table_tabs_year)
+    'month_col' => '1',            // indice colonna mese
+    'value_col' => '2',            // indice colonna valore
+    'value_column_label' => '',   // etichetta colonna valore (es. Valore quota (€))
   ];
 
   $out = [];
@@ -48,7 +53,7 @@ function edc_get_chart_meta(int $post_id): array {
   $out['data_source'] = in_array($out['data_source'], ['url', 'upload'], true) ? $out['data_source'] : 'url';
   $aid = absint($out['csv_attachment_id']);
   $out['csv_attachment_id'] = $aid > 0 ? (string) $aid : '';
-  $out['chart_type'] = in_array($out['chart_type'], ['line', 'bar'], true) ? $out['chart_type'] : 'line';
+  $out['chart_type'] = in_array($out['chart_type'], ['line', 'bar', 'table', 'table_tabs_year'], true) ? $out['chart_type'] : 'line';
   $out['has_header'] = ($out['has_header'] === '0') ? '0' : '1';
   $out['delimiter']  = ($out['delimiter'] === ';') ? ';' : ',';
   $out['line_smooth'] = ($out['line_smooth'] === '0') ? '0' : '1';
@@ -56,6 +61,10 @@ function edc_get_chart_meta(int $post_id): array {
 
   $x = intval($out['x_col']);
   $out['x_col'] = (string) max(0, $x);
+
+  $out['year_col'] = (string) max(0, intval($out['year_col']));
+  $out['month_col'] = (string) max(0, intval($out['month_col']));
+  $out['value_col'] = (string) max(0, intval($out['value_col']));
 
   $cache = intval($out['cache_minutes']);
   $out['cache_minutes'] = (string) max(1, $cache);
@@ -172,6 +181,71 @@ function edc_fetch_and_parse_chart_data(int $chart_id, bool $force_refresh = fal
   $header = [];
   if ($has_header) {
     $header = array_shift($rows);
+  }
+
+  $chart_type = $meta['chart_type'];
+
+  if ($chart_type === 'table') {
+    $payload = [
+      'chartType' => 'table',
+      'header' => is_array($header) ? array_map('strval', $header) : [],
+      'rows' => array_map(function ($r) {
+        return array_map(function ($cell) {
+          return (string) $cell;
+        }, is_array($r) ? $r : []);
+      }, $rows),
+      'labels' => [],
+      'datasets' => [],
+      'meta' => $meta,
+    ];
+    $ttl = max(60, intval($meta['cache_minutes']) * 60);
+    set_transient($cache_key, $payload, $ttl);
+    return $payload;
+  }
+
+  if ($chart_type === 'table_tabs_year') {
+    $year_col = max(0, intval($meta['year_col']));
+    $month_col = max(0, intval($meta['month_col']));
+    $value_col = max(0, intval($meta['value_col']));
+    $value_label = trim((string) $meta['value_column_label']);
+    if ($value_label === '' && $has_header && isset($header[$value_col])) {
+      $value_label = trim((string) $header[$value_col]);
+    }
+    if ($value_label === '') {
+      $value_label = __('Valore', 'edc-charts');
+    }
+
+    $dataByYear = [];
+    $years_set = [];
+    foreach ($rows as $r) {
+      if (!is_array($r)) continue;
+      $year_raw = isset($r[$year_col]) ? trim((string) $r[$year_col]) : '';
+      $year = is_numeric($year_raw) ? (string) intval($year_raw) : $year_raw;
+      if ($year === '') continue;
+      $month = isset($r[$month_col]) ? (string) $r[$month_col] : '';
+      $raw_val = isset($r[$value_col]) ? (string) $r[$value_col] : '';
+      $norm = edc_normalize_number($raw_val);
+      $value = $norm !== null ? $norm : $raw_val;
+      if (!isset($dataByYear[$year])) {
+        $dataByYear[$year] = [];
+        $years_set[$year] = true;
+      }
+      $dataByYear[$year][] = [ 'month' => $month, 'value' => $value ];
+    }
+    $years = array_keys($years_set);
+    rsort($years, SORT_NUMERIC);
+
+    $payload = [
+      'chartType' => 'table_tabs_year',
+      'years' => array_values($years),
+      'dataByYear' => $dataByYear,
+      'labels' => [],
+      'datasets' => [],
+      'meta' => array_merge($meta, [ 'value_column_label' => $value_label ]),
+    ];
+    $ttl = max(60, intval($meta['cache_minutes']) * 60);
+    set_transient($cache_key, $payload, $ttl);
+    return $payload;
   }
 
   $labels = [];

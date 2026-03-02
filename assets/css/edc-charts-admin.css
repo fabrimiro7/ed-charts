@@ -24,3 +24,8 @@
 .edc-bar-color-chip-remove:hover { color: #d63638; }
 /* CSV upload: select/remove buttons row */
 .edc-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Tab-by-year: column indices in a row */
+.edc-tabs-year-cols { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+.edc-tabs-year-cols > div { min-width: 100px; }
+.edc-tabs-year-cols label { font-weight: 600; font-size: 12px; }
+.edc-tabs-year-cols input[type="number"] { width: 64px; max-width: none; }
