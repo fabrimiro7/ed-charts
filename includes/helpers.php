@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) exit;
  *
  * @param int $post_id Chart post ID.
  * @return array<string, string> Keys: data_source, csv_url, csv_attachment_id, chart_type,
- *   has_header, delimiter, x_col, series_cols, cache_minutes, caption_below_x, caption_left_y, bar_colors.
+ *   has_header, delimiter, x_col, series_cols, cache_minutes, caption_below_x, caption_left_y, bar_colors, value_prefix, value_suffix, line_area_fill.
  */
 function edc_get_chart_meta(int $post_id): array {
   $defaults = [
@@ -33,6 +33,9 @@ function edc_get_chart_meta(int $post_id): array {
     'y_axis_min' => '',           // valore minimo asse Y (vuoto = calcolato dai dati)
     'y_axis_max' => '',           // valore massimo asse Y (vuoto = calcolato dai dati)
     'line_smooth' => '1',         // "1" | "0" linee curve (smooth) o squadrate
+    'line_area_fill' => '0',     // "1" | "0" riempimento area sotto le linee
+    'value_prefix' => '',         // prefisso opzionale per valori (es. €)
+    'value_suffix' => '',         // suffisso opzionale per valori (es. %)
   ];
 
   $out = [];
@@ -49,6 +52,7 @@ function edc_get_chart_meta(int $post_id): array {
   $out['has_header'] = ($out['has_header'] === '0') ? '0' : '1';
   $out['delimiter']  = ($out['delimiter'] === ';') ? ';' : ',';
   $out['line_smooth'] = ($out['line_smooth'] === '0') ? '0' : '1';
+  $out['line_area_fill'] = ($out['line_area_fill'] === '1') ? '1' : '0';
 
   $x = intval($out['x_col']);
   $out['x_col'] = (string) max(0, $x);

@@ -17,15 +17,18 @@
   }
 
   /**
-   * Format a value with optional suffix for tooltip/axis (e.g. "100 €").
+   * Format a value with optional prefix and suffix for tooltip/axis (e.g. "€ 100" or "100 %").
    * @param {*} v - Value (number or string).
-   * @param {string} [suffix] - Optional suffix to append.
+   * @param {string} [prefix] - Optional prefix to prepend.
+   * @param {string} [suffix] - Optional suffix to append (with space before it).
    * @returns {string}
    */
-  function fmtSuffix(v, suffix) {
+  function fmtValue(v, prefix, suffix) {
     if (v === null || typeof v === "undefined") return "";
-    if (!suffix) return String(v);
-    return String(v) + " " + suffix;
+    const str = String(v);
+    const pre = prefix ? prefix : "";
+    const suf = suffix ? " " + suffix : "";
+    return pre + str + suf;
   }
 
   /**
@@ -52,12 +55,14 @@
     const title = meta.title || "";
     const xLabel = meta.x_label || "";
     const yLabel = meta.y_label || "";
-    const ySuffix = meta.y_suffix || "";
+    const valuePrefix = meta.value_prefix || "";
+    const valueSuffix = meta.value_suffix || "";
     const rotateX = parseInt(meta.rotate_x || "0", 10) || 0;
     const showZoom = meta.show_data_zoom === "1";
     const stackBars = meta.stack === "1";
      const fitYAxis = meta.y_axis_fit_data === "1";
     const lineSmooth = meta.line_smooth !== "0";
+    const lineAreaFill = meta.line_area_fill === "1";
     const barColorsRaw = (meta.bar_colors || "").trim();
     const barColors = barColorsRaw
       ? barColorsRaw.split(/[\s,]+/).map(function (c) { return c.trim(); }).filter(Boolean)
@@ -84,6 +89,10 @@
       if (chartType === "line") {
         base.smooth = lineSmooth;
         base.showSymbol = false;
+        if (lineAreaFill) {
+          base.areaStyle = {};
+          if (datasets.length > 1) base.stack = "total";
+        }
       }
 
       if (chartType === "bar" || chartType === "grouped_bar") {
@@ -104,7 +113,7 @@
       tooltip: {
         trigger: "axis",
         axisPointer: { type: (chartType === "line") ? "line" : "shadow" },
-        valueFormatter: (value) => fmtSuffix(roundToMax1Decimal(value), ySuffix),
+        valueFormatter: (value) => fmtValue(roundToMax1Decimal(value), valuePrefix, valueSuffix),
       },
       legend: {
         show: datasets.length > 1,
@@ -125,7 +134,7 @@
         type: "value",
         name: yLabel || "",
         axisLabel: {
-          formatter: (value) => fmtSuffix(roundToMax1Decimal(value), ySuffix),
+          formatter: (value) => fmtValue(roundToMax1Decimal(value), valuePrefix, valueSuffix),
         },
       },
       series,

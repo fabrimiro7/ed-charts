@@ -126,6 +126,14 @@ msgstr ""
 msgid "Bar"
 msgstr ""
 
+#: includes/admin.php:105
+msgid "Riempimento area sotto le linee"
+msgstr ""
+
+#: includes/admin.php:109
+msgid "With multiple series, areas are stacked (stacked area chart)."
+msgstr ""
+
 #: includes/admin.php:102
 msgid "CSV has header row?"
 msgstr ""

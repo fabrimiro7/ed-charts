@@ -192,6 +192,28 @@ function edc_render_chart_metabox($post) {
   </div>
 
   <div class="edc-field">
+    <label for="edc_line_area_fill">
+      <input type="checkbox" id="edc_line_area_fill" name="edc_line_area_fill" value="1" <?php checked($meta['line_area_fill'], '1'); ?>>
+      <?php echo esc_html__('Riempimento area sotto le linee', 'edc-charts'); ?>
+    </label>
+    <div class="edc-help">
+      <?php echo esc_html__('With multiple series, areas are stacked (stacked area chart).', 'edc-charts'); ?>
+    </div>
+  </div>
+
+  <div class="edc-field">
+    <label for="edc_value_prefix"><?php echo esc_html__('Value prefix', 'edc-charts'); ?></label>
+    <input type="text" id="edc_value_prefix" name="edc_value_prefix" value="<?php echo esc_attr($meta['value_prefix']); ?>" placeholder="<?php echo esc_attr__('e.g. € or € ', 'edc-charts'); ?>">
+    <div class="edc-help"><?php echo esc_html__('Optional. Shown before values on the Y axis and in tooltips (e.g. € for currency).', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field">
+    <label for="edc_value_suffix"><?php echo esc_html__('Value suffix', 'edc-charts'); ?></label>
+    <input type="text" id="edc_value_suffix" name="edc_value_suffix" value="<?php echo esc_attr($meta['value_suffix']); ?>" placeholder="<?php echo esc_attr__('e.g. % or %', 'edc-charts'); ?>">
+    <div class="edc-help"><?php echo esc_html__('Optional. Shown after values on the Y axis and in tooltips (e.g. % for percentages).', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field">
     <label><?php echo esc_html__('Shortcode', 'edc-charts'); ?></label>
     <code>[edc_chart id="<?php echo intval($post->ID); ?>"]</code>
   </div>
@@ -216,6 +238,7 @@ function edc_save_chart_metabox($post_id, $post) {
     'csv_attachment_id' => 'int',
     'chart_type' => 'text',
     'line_smooth' => 'text',
+    'line_area_fill' => 'text',
     'y_axis_fit_data' => 'text',
     'y_axis_min' => 'text',
     'y_axis_max' => 'text',
@@ -227,6 +250,8 @@ function edc_save_chart_metabox($post_id, $post) {
     'caption_below_x' => 'html',
     'caption_left_y' => 'html',
     'bar_colors' => 'text',
+    'value_prefix' => 'text',
+    'value_suffix' => 'text',
   ];
 
   $allowed_csv_mimes = ['text/csv', 'application/csv', 'text/plain', 'application/octet-stream'];
@@ -242,6 +267,10 @@ function edc_save_chart_metabox($post_id, $post) {
 
     if ($key === 'line_smooth') {
       $val = isset($_POST['edc_line_smooth']) ? '1' : '0';
+    }
+
+    if ($key === 'line_area_fill') {
+      $val = isset($_POST['edc_line_area_fill']) ? '1' : '0';
     }
 
     if ($key === 'y_axis_min' || $key === 'y_axis_max') {
