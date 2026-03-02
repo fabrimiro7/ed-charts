@@ -224,6 +224,7 @@
           requestAnimationFrame(function () { chart.resize(); });
           setTimeout(function () { chart.resize(); }, 100);
           setTimeout(function () { chart.resize(); }, 300);
+          startAggressiveResize(container, chart);
         }
 
         // store references to avoid GC in some themes
@@ -231,6 +232,28 @@
         container.__edcRO = ro;
       })
       .catch((err) => showError(containerId, err.message || "Unexpected error."));
+  }
+
+  /**
+   * Poll chart.resize() every 250ms for containers that had 0 width at init (e.g. Elementor below tabs).
+   * Stops when container gets width or after 6 seconds.
+   */
+  function startAggressiveResize(container, chart) {
+    var deadline = Date.now() + 6000;
+    var t = setInterval(function () {
+      if (Date.now() > deadline) {
+        clearInterval(t);
+        if (container.__edcResizeInterval === t) delete container.__edcResizeInterval;
+        return;
+      }
+      chart.resize();
+      var w = container.getBoundingClientRect().width || container.offsetWidth || 0;
+      if (w > 0) {
+        clearInterval(t);
+        if (container.__edcResizeInterval === t) delete container.__edcResizeInterval;
+      }
+    }, 250);
+    container.__edcResizeInterval = t;
   }
 
   /**
@@ -246,33 +269,8 @@
   var visibilityObserver = null;
 
   /**
-   * Wait for container to have non-zero width (e.g. after Elementor layout), then call init.
-   * Uses ResizeObserver; fallback timeout 3s to init anyway.
-   */
-  function waitForWidthThenInit(container) {
-    var w = container.getBoundingClientRect().width || container.offsetWidth || 0;
-    if (w > 0) {
-      initOne(container);
-      return;
-    }
-    var timeout = setTimeout(function () {
-      if (container.__edcChart) return;
-      initOne(container);
-    }, 3000);
-    var ro = new ResizeObserver(function () {
-      var width = container.getBoundingClientRect().width || container.offsetWidth || 0;
-      if (width > 0) {
-        ro.disconnect();
-        clearTimeout(timeout);
-        if (!container.__edcChart) initOne(container);
-      }
-    });
-    ro.observe(container);
-  }
-
-  /**
-   * Observe container and init chart when it enters viewport (has visible dimensions).
-   * If visible but width is still 0 (Elementor flex), wait for width before init.
+   * Observe container and init chart when it enters viewport.
+   * Always inits when intersecting (even with 0 width); aggressive resize handles late layout.
    */
   function observeForVisibility(container) {
     if (container.__edcChart || container.__edcObservedForVisibility) return;
@@ -290,12 +288,7 @@
           if (!entry.isIntersecting) return;
           var el = entry.target;
           visibilityObserver.unobserve(el);
-          var w = el.getBoundingClientRect().width || el.offsetWidth || 0;
-          if (w > 0) {
-            initOne(el);
-          } else {
-            waitForWidthThenInit(el);
-          }
+          initOne(el);
         });
       }, { rootMargin: '80px', threshold: 0.01 });
     }
@@ -328,13 +321,22 @@
       initAll();
       observeNewCharts();
       setTimeout(initAll, 800);
+      setTimeout(initAll, 2000);
+      setTimeout(initAll, 4000);
     });
   } else {
     initAll();
     observeNewCharts();
     setTimeout(initAll, 800);
+    setTimeout(initAll, 2000);
+    setTimeout(initAll, 4000);
   }
 
   window.EDC_CHARTS = window.EDC_CHARTS || {};
   window.EDC_CHARTS.init = initAll;
+  window.EDC_CHARTS.resizeAll = function () {
+    document.querySelectorAll('div[data-edc-chart-id]').forEach(function (el) {
+      if (el.__edcChart) el.__edcChart.resize();
+    });
+  };
 })();
