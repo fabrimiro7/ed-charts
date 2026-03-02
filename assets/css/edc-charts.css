@@ -91,14 +91,29 @@
   color: #1a5f3c;
 }
 
+/* Force table layout (Elementor/themes often set table, tr, td to display:block) */
 .edc-chart-wrap .edc-chart-canvas .edc-chart-table {
-  width: 100%;
+  display: table !important;
+  width: 100% !important;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
 
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table thead {
+  display: table-header-group !important;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table tbody {
+  display: table-row-group !important;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table tr {
+  display: table-row !important;
+}
+
 .edc-chart-wrap .edc-chart-canvas .edc-chart-table th,
 .edc-chart-wrap .edc-chart-canvas .edc-chart-table td {
+  display: table-cell !important;
   padding: 8px 12px;
   text-align: left;
   border: 1px solid #d1d5db;
@@ -163,4 +178,28 @@
 
 .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table {
   margin-top: 0;
+}
+
+/* Force table layout inside tab panels too */
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table {
+  display: table !important;
+  width: 100% !important;
+  border-collapse: collapse;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table thead {
+  display: table-header-group !important;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tbody {
+  display: table-row-group !important;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tr {
+  display: table-row !important;
+}
+
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table th,
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table td {
+  display: table-cell !important;
 }

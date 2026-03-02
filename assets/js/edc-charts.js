@@ -163,6 +163,9 @@
       const tab = e.target && e.target.closest && e.target.closest(".edc-tabs-year-tab");
       if (!tab || !tab.getAttribute("data-year")) return;
 
+      e.preventDefault();
+      e.stopPropagation();
+
       const year = tab.getAttribute("data-year");
       const panels = container.querySelectorAll(".edc-tabs-year-panel");
       const tabs = container.querySelectorAll(".edc-tabs-year-tab");

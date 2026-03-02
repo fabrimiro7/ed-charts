@@ -135,6 +135,56 @@ function edc_enqueue_frontend_assets() {
 }
 
 /**
+ * Print critical inline CSS for table/tab display so it applies even when theme/Elementor overrides.
+ * Called once per page when shortcode is used; ensures table elements render as table and tabs work.
+ */
+function edc_print_inline_table_styles() {
+  static $printed = false;
+  if ($printed) return;
+  $printed = true;
+
+  $css = '
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table { display: table !important; width: 100% !important; border-collapse: collapse; }
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table thead,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table thead { display: table-header-group !important; }
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table tbody,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tbody { display: table-row-group !important; }
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table tr,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tr { display: table-row !important; }
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table th,
+  .edc-chart-wrap .edc-chart-canvas .edc-chart-table td,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table th,
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table td { display: table-cell !important; padding: 8px 12px; border: 1px solid #d1d5db; }
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel[aria-hidden="true"] { display: none !important; }
+  .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tabs { display: flex !important; gap: 10px; flex-wrap: wrap; }
+  ';
+  wp_add_inline_style('edc-charts', trim($css));
+}
+
+/**
+ * Return critical inline CSS as a style block for table/tab (output in shortcode HTML).
+ * Ensures styles apply when the shortcode is inside Elementor AJAX or iframe where enqueued CSS may not load.
+ *
+ * @return string HTML style block (empty if already printed once).
+ */
+function edc_get_critical_table_css() {
+  static $done = false;
+  if ($done) return '';
+  $done = true;
+
+  $css = '.edc-chart-wrap .edc-chart-canvas .edc-chart-table,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table{display:table!important;width:100%!important;border-collapse:collapse}
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table thead,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table thead{display:table-header-group!important}
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table tbody,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tbody{display:table-row-group!important}
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table tr,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table tr{display:table-row!important}
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table th,.edc-chart-wrap .edc-chart-canvas .edc-chart-table td,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table th,.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table td{display:table-cell!important;padding:8px 12px;border:1px solid #d1d5db}
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel[aria-hidden=true]{display:none!important}
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tabs{display:flex!important;gap:10px;flex-wrap:wrap}';
+
+  return '<style id="edc-charts-critical" type="text/css">' . $css . '</style>';
+}
+
+/**
  * Shortcode callback: [edc_chart id="123" height="380"].
  *
  * Renders a chart container and error placeholder. Enqueues frontend assets.
@@ -163,6 +213,7 @@ function edc_chart_shortcode($atts) {
   wp_enqueue_script('edc-echarts');
   wp_enqueue_script('edc-charts');
   wp_enqueue_style('edc-charts');
+  edc_print_inline_table_styles();
 
   $container_id = 'edc-chart-' . $chart_id . '-' . wp_generate_uuid4();
   $height = max(220, intval($atts['height']));
@@ -171,6 +222,7 @@ function edc_chart_shortcode($atts) {
   $caption_left_y = trim((string) $meta['caption_left_y']);
 
   $html = '<div class="edc-chart-wrap">';
+  $html .= edc_get_critical_table_css();
   $html .= '<div class="edc-chart-layout">';
 
   if ($caption_left_y !== '') {
