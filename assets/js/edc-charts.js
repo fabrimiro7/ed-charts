@@ -69,6 +69,9 @@
     container.classList.add("edc-chart-table-wrap");
     container.style.height = "auto";
     let html = "";
+    if ((meta.table_header_color || "").trim()) {
+      container.style.setProperty("--edc-header-bg", meta.table_header_color.trim());
+    }
     if (title) {
       html += '<div class="edc-chart-table-title">' + escapeHtml(title) + "</div>";
     }
@@ -117,6 +120,12 @@
 
     container.classList.add("edc-tabs-year-wrap");
     container.style.height = "auto";
+    if ((meta.table_header_color || "").trim()) {
+      container.style.setProperty("--edc-header-bg", meta.table_header_color.trim());
+    }
+    if ((meta.tab_button_color || "").trim()) {
+      container.style.setProperty("--edc-tab-active-bg", meta.tab_button_color.trim());
+    }
     let html = '<div class="edc-tabs-year-tabs" role="tablist">';
     years.forEach(function (year, idx) {
       const id = "edc-tab-" + (container.id || "chart") + "-" + year;

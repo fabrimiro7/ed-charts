@@ -120,7 +120,7 @@
 }
 
 .edc-chart-wrap .edc-chart-canvas .edc-chart-table thead th {
-  background: #2e7d5e !important;
+  background: var(--edc-header-bg, #2e7d5e) !important;
   color: #fff !important;
   font-weight: 600;
 }
@@ -150,7 +150,7 @@
   padding: 8px 14px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid #2e7d5e;
+  border: 1px solid var(--edc-tab-active-bg, #2e7d5e);
   background: #e8f5e9 !important;
   color: #1a5f3c !important;
   border-radius: 4px;
@@ -163,9 +163,9 @@
 }
 
 .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tab.edc-tab-active {
-  background: #2e7d5e !important;
+  background: var(--edc-tab-active-bg, #2e7d5e) !important;
   color: #fff !important;
-  border-color: #2e7d5e;
+  border-color: var(--edc-tab-active-bg, #2e7d5e);
 }
 
 .edc-chart-wrap .edc-chart-canvas .edc-tabs-year-content {

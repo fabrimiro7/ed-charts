@@ -139,10 +139,35 @@
     var v = chartTypeSelect ? chartTypeSelect.value : 'line';
     if (fieldTableTitle) fieldTableTitle.style.display = (v === 'table') ? '' : 'none';
     if (fieldTabsYear) fieldTabsYear.style.display = (v === 'table_tabs_year') ? '' : 'none';
+    var fieldHeaderColor = document.getElementById('edc-field-table-header-color');
+    var fieldTabColor = document.getElementById('edc-field-tab-button-color');
+    if (fieldHeaderColor) fieldHeaderColor.style.display = (v === 'table' || v === 'table_tabs_year') ? '' : 'none';
+    if (fieldTabColor) fieldTabColor.style.display = (v === 'table_tabs_year') ? '' : 'none';
   }
 
   if (chartTypeSelect) chartTypeSelect.addEventListener('change', toggleChartTypeFields);
   toggleChartTypeFields();
+
+  /* ── Table/Tab colors: sync picker and text input ── */
+  function bindColorPair(pickerId, inputId) {
+    var picker = document.getElementById(pickerId);
+    var input = document.getElementById(inputId);
+    if (!picker || !input) return;
+    picker.addEventListener('input', function () {
+      input.value = picker.value;
+    });
+    picker.addEventListener('change', function () {
+      input.value = picker.value;
+    });
+    input.addEventListener('input', function () {
+      var v = input.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v) || /^#[0-9a-fA-F]{3}$/.test(v)) {
+        picker.value = v.length === 4 ? '#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3] : v;
+      }
+    });
+  }
+  bindColorPair('edc_table_header_color_picker', 'edc_table_header_color');
+  bindColorPair('edc_tab_button_color_picker', 'edc_tab_button_color');
 
   if (uploadBtn && typeof wp !== 'undefined' && wp.media) {
     var frame = null;

@@ -114,6 +114,24 @@ function edc_render_chart_metabox($post) {
     <div class="edc-help"><?php echo esc_html__('Opzionale. Intestazione della colonna valore in tabella. Se vuoto viene usato l\'header CSV.', 'edc-charts'); ?></div>
   </div>
 
+  <div class="edc-field edc-chart-type-table edc-chart-type-tabs-year" id="edc-field-table-header-color" style="<?php echo in_array($meta['chart_type'], ['table', 'table_tabs_year'], true) ? '' : 'display:none;'; ?>">
+    <label for="edc_table_header_color"><?php echo esc_html__('Colore intestazioni tabelle', 'edc-charts'); ?></label>
+    <div class="edc-color-row">
+      <input type="color" id="edc_table_header_color_picker" value="<?php echo esc_attr($meta['table_header_color'] ?: '#2e7d5e'); ?>" aria-label="<?php echo esc_attr__('Colore intestazioni', 'edc-charts'); ?>">
+      <input type="text" id="edc_table_header_color" name="edc_table_header_color" value="<?php echo esc_attr($meta['table_header_color']); ?>" placeholder="#2e7d5e" maxlength="7">
+    </div>
+    <div class="edc-help"><?php echo esc_html__('Colore di sfondo dell\'intestazione delle tabelle. Lasciare vuoto per il verde predefinito.', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field edc-chart-type-tabs-year" id="edc-field-tab-button-color" style="<?php echo $meta['chart_type'] !== 'table_tabs_year' ? 'display:none;' : ''; ?>">
+    <label for="edc_tab_button_color"><?php echo esc_html__('Colore pulsanti tab', 'edc-charts'); ?></label>
+    <div class="edc-color-row">
+      <input type="color" id="edc_tab_button_color_picker" value="<?php echo esc_attr($meta['tab_button_color'] ?: '#2e7d5e'); ?>" aria-label="<?php echo esc_attr__('Colore pulsanti tab', 'edc-charts'); ?>">
+      <input type="text" id="edc_tab_button_color" name="edc_tab_button_color" value="<?php echo esc_attr($meta['tab_button_color']); ?>" placeholder="#2e7d5e" maxlength="7">
+    </div>
+    <div class="edc-help"><?php echo esc_html__('Colore del pulsante tab attivo. Lasciare vuoto per il verde predefinito.', 'edc-charts'); ?></div>
+  </div>
+
   <div class="edc-field">
     <label for="edc_line_smooth">
       <input type="checkbox" id="edc_line_smooth" name="edc_line_smooth" value="1" <?php checked($meta['line_smooth'], '1'); ?>>
@@ -286,6 +304,8 @@ function edc_save_chart_metabox($post_id, $post) {
     'month_col' => 'int',
     'value_col' => 'int',
     'value_column_label' => 'text',
+    'table_header_color' => 'text',
+    'tab_button_color' => 'text',
   ];
 
   $allowed_csv_mimes = ['text/csv', 'application/csv', 'text/plain', 'application/octet-stream'];
@@ -346,6 +366,10 @@ function edc_save_chart_metabox($post_id, $post) {
 
     if ($key === 'year_col' || $key === 'month_col' || $key === 'value_col') {
       $val = (string) max(0, intval($val));
+    }
+
+    if ($key === 'table_header_color' || $key === 'tab_button_color') {
+      $val = edc_sanitize_hex_color($val);
     }
 
     update_post_meta($post_id, 'edc_' . $key, $val);

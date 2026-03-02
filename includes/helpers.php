@@ -41,6 +41,8 @@ function edc_get_chart_meta(int $post_id): array {
     'month_col' => '1',            // indice colonna mese
     'value_col' => '2',            // indice colonna valore
     'value_column_label' => '',   // etichetta colonna valore (es. Valore quota (€))
+    'table_header_color' => '',    // colore intestazioni tabelle (hex, es. #2e7d5e)
+    'tab_button_color' => '',      // colore pulsanti tab attivi (hex)
   ];
 
   $out = [];
@@ -66,6 +68,9 @@ function edc_get_chart_meta(int $post_id): array {
   $out['month_col'] = (string) max(0, intval($out['month_col']));
   $out['value_col'] = (string) max(0, intval($out['value_col']));
 
+  $out['table_header_color'] = edc_sanitize_hex_color($out['table_header_color']);
+  $out['tab_button_color'] = edc_sanitize_hex_color($out['tab_button_color']);
+
   $cache = intval($out['cache_minutes']);
   $out['cache_minutes'] = (string) max(1, $cache);
 
@@ -81,7 +86,20 @@ function edc_get_chart_meta(int $post_id): array {
 }
 
 /**
- * Transient key used to cache chart data for a given chart ID.
+ * Sanitize hex color string (#RGB or #RRGGBB). Returns empty string if invalid.
+ *
+ * @param string $color
+ * @return string
+ */
+function edc_sanitize_hex_color(string $color): string {
+  $color = trim($color);
+  if ($color === '') return '';
+  if (preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $color)) {
+    return strtolower($color);
+  }
+  return '';
+}
+
  *
  * @param int $chart_id Chart post ID.
  * @return string Transient key.
