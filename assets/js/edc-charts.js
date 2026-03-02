@@ -17,7 +17,7 @@
   }
 
   /**
-   * Format a value with optional prefix and suffix for tooltip/axis (e.g. "€ 100" or "100 %").
+   * Format a value with optional prefix and suffix for tooltip (e.g. "€ 100" or "100 %").
    * @param {*} v - Value (number or string).
    * @param {string} [prefix] - Optional prefix to prepend.
    * @param {string} [suffix] - Optional suffix to append (with space before it).
@@ -90,7 +90,7 @@
         base.smooth = lineSmooth;
         base.showSymbol = false;
         if (lineAreaFill) {
-          base.areaStyle = {};
+          base.areaStyle = { opacity: 0.18 };
           if (datasets.length > 1) base.stack = "total";
         }
       }
@@ -134,7 +134,7 @@
         type: "value",
         name: yLabel || "",
         axisLabel: {
-          formatter: (value) => fmtValue(roundToMax1Decimal(value), valuePrefix, valueSuffix),
+          formatter: (value) => roundToMax1Decimal(value),
         },
       },
       series,
