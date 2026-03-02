@@ -100,6 +100,8 @@ function edc_sanitize_hex_color(string $color): string {
   return '';
 }
 
+/**
+ * Transient key used to cache chart data for a given chart ID.
  *
  * @param int $chart_id Chart post ID.
  * @return string Transient key.
