@@ -121,8 +121,10 @@
     years.forEach(function (year, idx) {
       const id = "edc-tab-" + (container.id || "chart") + "-" + year;
       const panelId = "edc-panel-" + (container.id || "chart") + "-" + year;
-      const active = idx === 0 ? " active" : "";
-      html += '<button type="button" class="edc-tabs-year-tab' + active + '" role="tab" aria-selected="' + (idx === 0) + '" aria-controls="' + panelId + '" id="' + id + '" data-year="' + escapeHtml(String(year)) + '">' + escapeHtml(String(year)) + "</button>";
+      const activeClass = idx === 0 ? " edc-tab-active" : "";
+      const ariaSelected = idx === 0 ? "true" : "false";
+      const ariaHidden = idx === 0 ? "false" : "true";
+      html += '<button type="button" class="edc-tabs-year-tab' + activeClass + '" role="tab" aria-selected="' + ariaSelected + '" aria-controls="' + panelId + '" id="' + id + '" data-year="' + escapeHtml(String(year)) + '">' + escapeHtml(String(year)) + "</button>";
     });
     const allId = "edc-tab-" + (container.id || "chart") + "-all";
     const allPanelId = "edc-panel-" + (container.id || "chart") + "-all";
@@ -142,39 +144,39 @@
 
     years.forEach(function (year, idx) {
       const panelId = "edc-panel-" + (container.id || "chart") + "-" + year;
-      const hidden = idx !== 0 ? " hidden" : "";
+      const isFirst = idx === 0;
       const list = dataByYear[year] || [];
-      html += '<div class="edc-tabs-year-panel' + hidden + '" role="tabpanel" id="' + panelId + '" aria-labelledby="edc-tab-' + (container.id || "chart") + "-" + year + '" data-year="' + escapeHtml(String(year)) + '">';
+      html += '<div class="edc-tabs-year-panel" role="tabpanel" id="' + panelId + '" aria-labelledby="edc-tab-' + (container.id || "chart") + "-" + year + '" data-year="' + escapeHtml(String(year)) + '" aria-hidden="' + (!isFirst) + '">';
       html += buildMonthValueTable(list, valueLabel);
       html += "</div>";
     });
 
-    html += '<div class="edc-tabs-year-panel hidden" role="tabpanel" id="' + allPanelId + '" aria-labelledby="' + allId + '" data-year="all">';
+    html += '<div class="edc-tabs-year-panel" role="tabpanel" id="' + allPanelId + '" aria-labelledby="' + allId + '" data-year="all" aria-hidden="true">';
     html += buildMonthValueTable(allRows, valueLabel);
     html += "</div>";
 
     html += "</div>";
     container.innerHTML = html;
 
-    // Tab click: show corresponding panel, update aria-selected and .active
-    const tabs = container.querySelectorAll(".edc-tabs-year-tab");
-    const panels = container.querySelectorAll(".edc-tabs-year-panel");
-    tabs.forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        const year = tab.getAttribute("data-year");
-        const panel = container.querySelector('.edc-tabs-year-panel[data-year="' + year + '"]');
-        tabs.forEach(function (t) {
-          t.classList.remove("active");
-          t.setAttribute("aria-selected", "false");
-        });
-        panels.forEach(function (p) {
-          p.classList.add("hidden");
-        });
-        tab.classList.add("active");
-        tab.setAttribute("aria-selected", "true");
-        if (panel) {
-          panel.classList.remove("hidden");
-        }
+    // Event delegation: one listener on container so clicks always work (Elementor/theme safe)
+    container.addEventListener("click", function (e) {
+      const tab = e.target && e.target.closest && e.target.closest(".edc-tabs-year-tab");
+      if (!tab || !tab.getAttribute("data-year")) return;
+
+      const year = tab.getAttribute("data-year");
+      const panels = container.querySelectorAll(".edc-tabs-year-panel");
+      const tabs = container.querySelectorAll(".edc-tabs-year-tab");
+
+      tabs.forEach(function (t) {
+        t.classList.remove("edc-tab-active");
+        t.setAttribute("aria-selected", "false");
+      });
+      tab.classList.add("edc-tab-active");
+      tab.setAttribute("aria-selected", "true");
+
+      panels.forEach(function (p) {
+        const isMatch = p.getAttribute("data-year") === year;
+        p.setAttribute("aria-hidden", isMatch ? "false" : "true");
       });
     });
 

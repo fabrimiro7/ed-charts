@@ -78,88 +78,89 @@
   }
 }
 
-/* ── Table type (n columns) ── */
-.edc-chart-table-wrap {
+/* ── Table type (n columns) – scoped under wrap/canvas to override Elementor/theme ── */
+.edc-chart-wrap .edc-chart-canvas.edc-chart-table-wrap {
   width: 100%;
   min-width: 0;
 }
 
-.edc-chart-table-title {
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table-title {
   font-weight: 700;
   font-size: 1rem;
   margin-bottom: 10px;
   color: #1a5f3c;
 }
 
-.edc-chart-table {
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
 
-.edc-chart-table th,
-.edc-chart-table td {
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table th,
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table td {
   padding: 8px 12px;
   text-align: left;
   border: 1px solid #d1d5db;
 }
 
-.edc-chart-table thead th {
-  background: #e8f5e9;
-  color: #1a5f3c;
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table thead th {
+  background: #2e7d5e !important;
+  color: #fff !important;
   font-weight: 600;
 }
 
-.edc-chart-table tbody tr:nth-child(even) {
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table tbody tr:nth-child(even) {
   background: #f9fafb;
 }
 
-.edc-chart-table td:not(:first-child) {
+.edc-chart-wrap .edc-chart-canvas .edc-chart-table td:not(:first-child) {
   text-align: right;
 }
 
-/* ── Tab by year ── */
-.edc-tabs-year-wrap {
+/* ── Tab by year – scoped and with spacing between tabs ── */
+.edc-chart-wrap .edc-chart-canvas.edc-tabs-year-wrap {
   width: 100%;
   min-width: 0;
 }
 
-.edc-tabs-year-tabs {
-  display: flex;
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tabs {
+  display: flex !important;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
-.edc-tabs-year-tab {
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tab {
   padding: 8px 14px;
   font-size: 0.875rem;
   font-weight: 500;
   border: 1px solid #2e7d5e;
-  background: #e8f5e9;
-  color: #1a5f3c;
+  background: #e8f5e9 !important;
+  color: #1a5f3c !important;
   border-radius: 4px;
   cursor: pointer;
+  appearance: none;
 }
 
-.edc-tabs-year-tab:hover {
-  background: #c8e6c9;
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tab:hover {
+  background: #c8e6c9 !important;
 }
 
-.edc-tabs-year-tab.active {
-  background: #2e7d5e;
-  color: #fff;
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-tab.edc-tab-active {
+  background: #2e7d5e !important;
+  color: #fff !important;
   border-color: #2e7d5e;
 }
 
-.edc-tabs-year-content {
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-content {
   margin-top: 0;
 }
 
-.edc-tabs-year-panel.hidden {
-  display: none;
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel[aria-hidden="true"] {
+  display: none !important;
 }
 
-.edc-tabs-year-panel .edc-chart-table {
+.edc-chart-wrap .edc-chart-canvas .edc-tabs-year-panel .edc-chart-table {
   margin-top: 0;
 }
