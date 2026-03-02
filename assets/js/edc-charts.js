@@ -229,13 +229,45 @@
   /**
    * Initialize all chart containers on the page (div[data-edc-chart-id]).
    * Safe to call multiple times; already-initialized containers are skipped.
+   * Uses IntersectionObserver so charts init when visible (fixes Elementor sections with 0 width at load).
    */
   function initAll() {
-    document.querySelectorAll('div[data-edc-chart-id]').forEach(initOne);
+    var containers = document.querySelectorAll('div[data-edc-chart-id]');
+    containers.forEach(observeForVisibility);
+  }
+
+  var visibilityObserver = null;
+
+  /**
+   * Observe container and init chart when it enters viewport (has visible dimensions).
+   * Fixes charts in Elementor sections below the fold or inside widgets that render with 0 width at first paint.
+   */
+  function observeForVisibility(container) {
+    if (container.__edcChart || container.__edcObservedForVisibility) return;
+    if (!container.getAttribute('data-edc-chart-id')) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      initOne(container);
+      return;
+    }
+
+    container.__edcObservedForVisibility = true;
+    if (!visibilityObserver) {
+      visibilityObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          visibilityObserver.unobserve(el);
+          initOne(el);
+        });
+      }, { rootMargin: '80px', threshold: 0.01 });
+    }
+    visibilityObserver.observe(container);
   }
 
   /**
    * Observe DOM for new chart containers (e.g. Elementor shortcode rendered after DOMContentLoaded).
+   * New containers are observed for visibility before init.
    */
   function observeNewCharts() {
     var observer = new MutationObserver(function (mutations) {
@@ -243,11 +275,11 @@
         mutation.addedNodes.forEach(function (node) {
           if (node.nodeType !== 1) return;
           if (node.getAttribute && node.getAttribute('data-edc-chart-id')) {
-            initOne(node);
+            observeForVisibility(node);
             return;
           }
           var containers = node.querySelectorAll && node.querySelectorAll('div[data-edc-chart-id]');
-          if (containers) containers.forEach(initOne);
+          if (containers) containers.forEach(observeForVisibility);
         });
       });
     });
@@ -258,10 +290,12 @@
     document.addEventListener("DOMContentLoaded", function () {
       initAll();
       observeNewCharts();
+      setTimeout(initAll, 800);
     });
   } else {
     initAll();
     observeNewCharts();
+    setTimeout(initAll, 800);
   }
 
   window.EDC_CHARTS = window.EDC_CHARTS || {};
