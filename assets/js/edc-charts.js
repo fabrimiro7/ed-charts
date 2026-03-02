@@ -178,9 +178,12 @@
   /**
    * Fetch chart data from REST, init ECharts on the container, attach ResizeObserver for resize.
    * On error, calls showError for the container's error element.
+   * Skips containers already initialized (e.g. after dynamic load in Elementor).
    * @param {Element} container - DOM element with data-edc-chart-id and id.
    */
   function initOne(container) {
+    if (container.__edcChart) return;
+
     const chartId = container.getAttribute("data-edc-chart-id");
     if (!chartId) return;
 
@@ -225,14 +228,42 @@
 
   /**
    * Initialize all chart containers on the page (div[data-edc-chart-id]).
+   * Safe to call multiple times; already-initialized containers are skipped.
    */
   function initAll() {
     document.querySelectorAll('div[data-edc-chart-id]').forEach(initOne);
   }
 
+  /**
+   * Observe DOM for new chart containers (e.g. Elementor shortcode rendered after DOMContentLoaded).
+   */
+  function observeNewCharts() {
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          if (node.getAttribute && node.getAttribute('data-edc-chart-id')) {
+            initOne(node);
+            return;
+          }
+          var containers = node.querySelectorAll && node.querySelectorAll('div[data-edc-chart-id]');
+          if (containers) containers.forEach(initOne);
+        });
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAll);
+    document.addEventListener("DOMContentLoaded", function () {
+      initAll();
+      observeNewCharts();
+    });
   } else {
     initAll();
+    observeNewCharts();
   }
+
+  window.EDC_CHARTS = window.EDC_CHARTS || {};
+  window.EDC_CHARTS.init = initAll;
 })();
