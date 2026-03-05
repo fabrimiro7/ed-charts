@@ -20,7 +20,7 @@ function edc_get_chart_meta(int $post_id): array {
     'data_source' => 'url',       // 'url' | 'upload'
     'csv_url' => '',
     'csv_attachment_id' => '',    // attachment ID when data_source = upload
-    'chart_type' => 'line',       // line | bar | table | table_tabs_year
+    'chart_type' => 'line',       // line | bar | table | table_tabs_year | table_tabs_year_unified_date
     'has_header' => '1',          // "1" | "0"
     'delimiter' => ',',           // ',' or ';'
     'x_col' => '0',              // index as string
@@ -40,9 +40,12 @@ function edc_get_chart_meta(int $post_id): array {
     'year_col' => '0',            // indice colonna anno (tipo table_tabs_year)
     'month_col' => '1',            // indice colonna mese
     'value_col' => '2',            // indice colonna valore
+    'date_col' => '0',            // indice colonna data unificata (tipo table_tabs_year_unified_date)
     'value_column_label' => '',   // etichetta colonna valore (es. Valore quota (€))
     'table_header_color' => '',    // colore intestazioni tabelle (hex, es. #2e7d5e)
     'tab_button_color' => '',      // colore pulsanti tab attivi (hex)
+    'date_range_start' => '',      // filtro range: data inizio (Y-m-d), vuoto = nessun filtro
+    'date_range_end' => '',        // filtro range: data fine (Y-m-d), opzionale
   ];
 
   $out = [];
@@ -55,7 +58,7 @@ function edc_get_chart_meta(int $post_id): array {
   $out['data_source'] = in_array($out['data_source'], ['url', 'upload'], true) ? $out['data_source'] : 'url';
   $aid = absint($out['csv_attachment_id']);
   $out['csv_attachment_id'] = $aid > 0 ? (string) $aid : '';
-  $out['chart_type'] = in_array($out['chart_type'], ['line', 'bar', 'table', 'table_tabs_year'], true) ? $out['chart_type'] : 'line';
+  $out['chart_type'] = in_array($out['chart_type'], ['line', 'bar', 'table', 'table_tabs_year', 'table_tabs_year_unified_date'], true) ? $out['chart_type'] : 'line';
   $out['has_header'] = ($out['has_header'] === '0') ? '0' : '1';
   $out['delimiter']  = ($out['delimiter'] === ';') ? ';' : ',';
   $out['line_smooth'] = ($out['line_smooth'] === '0') ? '0' : '1';
@@ -67,6 +70,7 @@ function edc_get_chart_meta(int $post_id): array {
   $out['year_col'] = (string) max(0, intval($out['year_col']));
   $out['month_col'] = (string) max(0, intval($out['month_col']));
   $out['value_col'] = (string) max(0, intval($out['value_col']));
+  $out['date_col'] = (string) max(0, intval($out['date_col']));
 
   $out['table_header_color'] = edc_sanitize_hex_color($out['table_header_color']);
   $out['tab_button_color'] = edc_sanitize_hex_color($out['tab_button_color']);
@@ -98,6 +102,97 @@ function edc_sanitize_hex_color(string $color): string {
     return strtolower($color);
   }
   return '';
+}
+
+/**
+ * Return Italian month name (1–12). 0 or invalid returns empty string.
+ *
+ * @param int $month_num Month number 1–12.
+ * @return string
+ */
+function edc_month_name_it(int $month_num): string {
+  $months = [
+    1 => __('Gennaio', 'edc-charts'),
+    2 => __('Febbraio', 'edc-charts'),
+    3 => __('Marzo', 'edc-charts'),
+    4 => __('Aprile', 'edc-charts'),
+    5 => __('Maggio', 'edc-charts'),
+    6 => __('Giugno', 'edc-charts'),
+    7 => __('Luglio', 'edc-charts'),
+    8 => __('Agosto', 'edc-charts'),
+    9 => __('Settembre', 'edc-charts'),
+    10 => __('Ottobre', 'edc-charts'),
+    11 => __('Novembre', 'edc-charts'),
+    12 => __('Dicembre', 'edc-charts'),
+  ];
+  return isset($months[$month_num]) ? $months[$month_num] : '';
+}
+
+/**
+ * Parse month string to number 1–12. Accepts numeric "1"-"12" or Italian month names (case-insensitive).
+ *
+ * @param string $month_str Raw month from CSV (e.g. "3", "Marzo").
+ * @return int 1–12 or 0 if invalid.
+ */
+function edc_month_to_num(string $month_str): int {
+  $s = trim($month_str);
+  if ($s === '') return 0;
+  if (is_numeric($s)) {
+    $n = (int) $s;
+    return ($n >= 1 && $n <= 12) ? $n : 0;
+  }
+  $names = [
+    'gennaio' => 1, 'febbraio' => 2, 'marzo' => 3, 'aprile' => 4, 'maggio' => 5, 'giugno' => 6,
+    'luglio' => 7, 'agosto' => 8, 'settembre' => 9, 'ottobre' => 10, 'novembre' => 11, 'dicembre' => 12,
+  ];
+  $key = strtolower($s);
+  return isset($names[$key]) ? $names[$key] : 0;
+}
+
+/**
+ * Check if a row timestamp falls within the optional date range.
+ * If range_start is empty, no filter (returns true). Otherwise row_ts must be >= start; if range_end is set, row_ts must be <= end (end of day).
+ *
+ * @param int|null $row_ts Unix timestamp of the row date (or null = exclude).
+ * @param string   $range_start Y-m-d or empty.
+ * @param string   $range_end   Y-m-d or empty.
+ * @return bool
+ */
+function edc_row_in_date_range(?int $row_ts, string $range_start, string $range_end): bool {
+  $range_start = trim($range_start);
+  if ($range_start === '') return true;
+  if ($row_ts === null) return false;
+  $start_ts = strtotime($range_start . ' 00:00:00');
+  if ($start_ts === false) return true;
+  if ($row_ts < $start_ts) return false;
+  $range_end = trim($range_end);
+  if ($range_end === '') return true;
+  $end_ts = strtotime($range_end . ' 23:59:59');
+  if ($end_ts === false) return true;
+  return $row_ts <= $end_ts;
+}
+
+/**
+ * Parse a date string to timestamp. Tries strtotime() then d/m/Y and Y-m-d.
+ *
+ * @param string $date_str Raw date from CSV.
+ * @return int|null Unix timestamp or null if unparseable.
+ */
+function edc_parse_date_unified(string $date_str): ?int {
+  $s = trim($date_str);
+  if ($s === '') return null;
+  $ts = strtotime($s);
+  if ($ts !== false) return $ts;
+  // Try d/m/Y and Y-m-d
+  if (preg_match('/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/', $s, $m)) {
+    $ts = mktime(0, 0, 0, (int) $m[2], (int) $m[1], (int) $m[3]);
+    return $ts !== false ? $ts : null;
+  }
+  if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $s, $m)) {
+    $ts = mktime(0, 0, 0, (int) $m[2], (int) $m[3], (int) $m[1]);
+    return $ts !== false ? $ts : null;
+  }
+  return null;
 }
 
 /**
@@ -235,14 +330,23 @@ function edc_fetch_and_parse_chart_data(int $chart_id, bool $force_refresh = fal
       $value_label = __('Valore', 'edc-charts');
     }
 
+    $range_start = trim((string) ($meta['date_range_start'] ?? ''));
+    $range_end = trim((string) ($meta['date_range_end'] ?? ''));
+
     $dataByYear = [];
     $years_set = [];
     foreach ($rows as $r) {
       if (!is_array($r)) continue;
       $year_raw = isset($r[$year_col]) ? trim((string) $r[$year_col]) : '';
       $year = is_numeric($year_raw) ? (string) intval($year_raw) : $year_raw;
-      if ($year === '') continue;
-      $month = isset($r[$month_col]) ? (string) $r[$month_col] : '';
+      if ($year === '' || !is_numeric($year)) continue;
+      $year_int = (int) $year;
+      $month_str = isset($r[$month_col]) ? (string) $r[$month_col] : '';
+      $month_num = edc_month_to_num($month_str);
+      if ($month_num === 0) continue;
+      $row_ts = mktime(0, 0, 0, $month_num, 1, $year_int);
+      if ($row_ts === false || !edc_row_in_date_range($row_ts, $range_start, $range_end)) continue;
+      $month = edc_month_name_it($month_num);
       $raw_val = isset($r[$value_col]) ? (string) $r[$value_col] : '';
       $norm = edc_normalize_number($raw_val);
       $value = $norm !== null ? $norm : $raw_val;
@@ -268,16 +372,76 @@ function edc_fetch_and_parse_chart_data(int $chart_id, bool $force_refresh = fal
     return $payload;
   }
 
+  if ($chart_type === 'table_tabs_year_unified_date') {
+    $date_col = max(0, intval($meta['date_col']));
+    $value_col = max(0, intval($meta['value_col']));
+    $value_label = trim((string) $meta['value_column_label']);
+    if ($value_label === '' && $has_header && isset($header[$value_col])) {
+      $value_label = trim((string) $header[$value_col]);
+    }
+    if ($value_label === '') {
+      $value_label = __('Valore', 'edc-charts');
+    }
+
+    $range_start = trim((string) ($meta['date_range_start'] ?? ''));
+    $range_end = trim((string) ($meta['date_range_end'] ?? ''));
+
+    $dataByYear = [];
+    $years_set = [];
+    foreach ($rows as $r) {
+      if (!is_array($r)) continue;
+      $date_raw = isset($r[$date_col]) ? trim((string) $r[$date_col]) : '';
+      $ts = edc_parse_date_unified($date_raw);
+      if ($ts === null) continue;
+      if (!edc_row_in_date_range($ts, $range_start, $range_end)) continue;
+      $year = (string) (int) date('Y', $ts);
+      $month_num = (int) date('n', $ts);
+      $month = edc_month_name_it($month_num);
+      if ($month === '') continue;
+      $raw_val = isset($r[$value_col]) ? (string) $r[$value_col] : '';
+      $norm = edc_normalize_number($raw_val);
+      $value = $norm !== null ? $norm : $raw_val;
+      if (!isset($dataByYear[$year])) {
+        $dataByYear[$year] = [];
+        $years_set[$year] = true;
+      }
+      $dataByYear[$year][] = [ 'month' => $month, 'value' => $value ];
+    }
+    $years = array_keys($years_set);
+    rsort($years, SORT_NUMERIC);
+
+    $payload = [
+      'chartType' => 'table_tabs_year_unified_date',
+      'years' => array_values($years),
+      'dataByYear' => $dataByYear,
+      'labels' => [],
+      'datasets' => [],
+      'meta' => array_merge($meta, [ 'value_column_label' => $value_label ]),
+    ];
+    $ttl = max(60, intval($meta['cache_minutes']) * 60);
+    set_transient($cache_key, $payload, $ttl);
+    return $payload;
+  }
+
   $labels = [];
   $series_data = [];
   foreach ($series_cols as $c) {
     $series_data[$c] = [];
   }
 
+  $range_start = trim((string) ($meta['date_range_start'] ?? ''));
+  $range_end = trim((string) ($meta['date_range_end'] ?? ''));
+
   foreach ($rows as $r) {
     if (!is_array($r)) continue;
 
-    $labels[] = isset($r[$x_col]) ? (string) $r[$x_col] : '';
+    $x_val = isset($r[$x_col]) ? (string) $r[$x_col] : '';
+    if ($range_start !== '') {
+      $row_ts = edc_parse_date_unified($x_val);
+      if (!edc_row_in_date_range($row_ts, $range_start, $range_end)) continue;
+    }
+
+    $labels[] = $x_val !== '' ? $x_val : '';
 
     foreach ($series_cols as $c) {
       $raw = isset($r[$c]) ? (string) $r[$c] : '';

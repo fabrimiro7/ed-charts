@@ -84,6 +84,7 @@ function edc_render_chart_metabox($post) {
       <option value="bar"  <?php selected($meta['chart_type'], 'bar'); ?>><?php echo esc_html__('Bar', 'edc-charts'); ?></option>
       <option value="table" <?php selected($meta['chart_type'], 'table'); ?>><?php echo esc_html__('Tabella (n colonne)', 'edc-charts'); ?></option>
       <option value="table_tabs_year" <?php selected($meta['chart_type'], 'table_tabs_year'); ?>><?php echo esc_html__('Tab per anno (mese/valore)', 'edc-charts'); ?></option>
+      <option value="table_tabs_year_unified_date" <?php selected($meta['chart_type'], 'table_tabs_year_unified_date'); ?>><?php echo esc_html__('Tab per anno mese/valore data unificata', 'edc-charts'); ?></option>
     </select>
   </div>
 
@@ -114,7 +115,24 @@ function edc_render_chart_metabox($post) {
     <div class="edc-help"><?php echo esc_html__('Opzionale. Intestazione della colonna valore in tabella. Se vuoto viene usato l\'header CSV.', 'edc-charts'); ?></div>
   </div>
 
-  <div class="edc-field edc-chart-type-table edc-chart-type-tabs-year" id="edc-field-table-header-color" style="<?php echo in_array($meta['chart_type'], ['table', 'table_tabs_year'], true) ? '' : 'display:none;'; ?>">
+  <div class="edc-field edc-chart-type-tabs-year-unified" id="edc-field-tabs-year-unified" style="<?php echo $meta['chart_type'] !== 'table_tabs_year_unified_date' ? 'display:none;' : ''; ?>">
+    <label><?php echo esc_html__('Colonne CSV (0-based)', 'edc-charts'); ?></label>
+    <div class="edc-tabs-year-cols">
+      <div>
+        <label for="edc_date_col"><?php echo esc_html__('Colonna data', 'edc-charts'); ?></label>
+        <input type="number" min="0" id="edc_date_col" name="edc_date_col" value="<?php echo esc_attr($meta['date_col']); ?>">
+      </div>
+      <div>
+        <label for="edc_value_col_unified"><?php echo esc_html__('Colonna valore', 'edc-charts'); ?></label>
+        <input type="number" min="0" id="edc_value_col_unified" name="edc_value_col" value="<?php echo esc_attr($meta['value_col']); ?>">
+      </div>
+    </div>
+    <label for="edc_value_column_label_unified" style="display:block; margin-top:8px;"><?php echo esc_html__('Etichetta colonna valore', 'edc-charts'); ?></label>
+    <input type="text" id="edc_value_column_label_unified" name="edc_value_column_label" value="<?php echo esc_attr($meta['value_column_label']); ?>" placeholder="<?php echo esc_attr__('e.g. Valore quota (€)', 'edc-charts'); ?>">
+    <div class="edc-help"><?php echo esc_html__('La colonna data può essere in formato ISO (es. 2024-03-15) o gg/mm/aaaa. Anno e mese vengono estratti automaticamente.', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field edc-chart-type-table edc-chart-type-tabs-year edc-chart-type-tabs-year-unified" id="edc-field-table-header-color" style="<?php echo in_array($meta['chart_type'], ['table', 'table_tabs_year', 'table_tabs_year_unified_date'], true) ? '' : 'display:none;'; ?>">
     <label for="edc_table_header_color"><?php echo esc_html__('Colore intestazioni tabelle', 'edc-charts'); ?></label>
     <div class="edc-color-row">
       <input type="color" id="edc_table_header_color_picker" value="<?php echo esc_attr($meta['table_header_color'] ?: '#2e7d5e'); ?>" aria-label="<?php echo esc_attr__('Colore intestazioni', 'edc-charts'); ?>">
@@ -123,13 +141,28 @@ function edc_render_chart_metabox($post) {
     <div class="edc-help"><?php echo esc_html__('Colore di sfondo dell\'intestazione delle tabelle. Lasciare vuoto per il verde predefinito.', 'edc-charts'); ?></div>
   </div>
 
-  <div class="edc-field edc-chart-type-tabs-year" id="edc-field-tab-button-color" style="<?php echo $meta['chart_type'] !== 'table_tabs_year' ? 'display:none;' : ''; ?>">
+  <div class="edc-field edc-chart-type-tabs-year edc-chart-type-tabs-year-unified" id="edc-field-tab-button-color" style="<?php echo in_array($meta['chart_type'], ['table_tabs_year', 'table_tabs_year_unified_date'], true) ? '' : 'display:none;'; ?>">
     <label for="edc_tab_button_color"><?php echo esc_html__('Colore pulsanti tab', 'edc-charts'); ?></label>
     <div class="edc-color-row">
       <input type="color" id="edc_tab_button_color_picker" value="<?php echo esc_attr($meta['tab_button_color'] ?: '#2e7d5e'); ?>" aria-label="<?php echo esc_attr__('Colore pulsanti tab', 'edc-charts'); ?>">
       <input type="text" id="edc_tab_button_color" name="edc_tab_button_color" value="<?php echo esc_attr($meta['tab_button_color']); ?>" placeholder="#2e7d5e" maxlength="7">
     </div>
     <div class="edc-help"><?php echo esc_html__('Colore del pulsante tab attivo. Lasciare vuoto per il verde predefinito.', 'edc-charts'); ?></div>
+  </div>
+
+  <div class="edc-field edc-chart-type-range" id="edc-field-date-range" style="<?php echo in_array($meta['chart_type'], ['line', 'bar', 'table_tabs_year', 'table_tabs_year_unified_date'], true) ? '' : 'display:none;'; ?>">
+    <label><?php echo esc_html__('Range date', 'edc-charts'); ?></label>
+    <div class="edc-date-range-cols">
+      <div>
+        <label for="edc_date_range_start"><?php echo esc_html__('Data inizio', 'edc-charts'); ?></label>
+        <input type="date" id="edc_date_range_start" name="edc_date_range_start" value="<?php echo esc_attr($meta['date_range_start']); ?>">
+      </div>
+      <div>
+        <label for="edc_date_range_end"><?php echo esc_html__('Data fine', 'edc-charts'); ?></label>
+        <input type="date" id="edc_date_range_end" name="edc_date_range_end" value="<?php echo esc_attr($meta['date_range_end']); ?>">
+      </div>
+    </div>
+    <div class="edc-help"><?php echo esc_html__('Solo data inizio = da quella data in poi. Con data fine = solo righe nel periodo. Lasciare vuoto per non filtrare.', 'edc-charts'); ?></div>
   </div>
 
   <div class="edc-field">
@@ -303,9 +336,12 @@ function edc_save_chart_metabox($post_id, $post) {
     'year_col' => 'int',
     'month_col' => 'int',
     'value_col' => 'int',
+    'date_col' => 'int',
     'value_column_label' => 'text',
     'table_header_color' => 'text',
     'tab_button_color' => 'text',
+    'date_range_start' => 'text',
+    'date_range_end' => 'text',
   ];
 
   $allowed_csv_mimes = ['text/csv', 'application/csv', 'text/plain', 'application/octet-stream'];
@@ -361,15 +397,28 @@ function edc_save_chart_metabox($post_id, $post) {
     }
 
     if ($key === 'chart_type') {
-      $val = in_array($val, ['line', 'bar', 'table', 'table_tabs_year'], true) ? $val : 'line';
+      $val = in_array($val, ['line', 'bar', 'table', 'table_tabs_year', 'table_tabs_year_unified_date'], true) ? $val : 'line';
     }
 
     if ($key === 'year_col' || $key === 'month_col' || $key === 'value_col') {
       $val = (string) max(0, intval($val));
     }
+    if ($key === 'date_col') {
+      $val = (string) max(0, intval($val));
+    }
 
     if ($key === 'table_header_color' || $key === 'tab_button_color') {
       $val = edc_sanitize_hex_color($val);
+    }
+
+    if ($key === 'date_range_start' || $key === 'date_range_end') {
+      $val = trim((string) $val);
+      if ($val !== '') {
+        $dt = \DateTime::createFromFormat('Y-m-d', $val);
+        if (!($dt && $dt->format('Y-m-d') === $val)) {
+          $val = '';
+        }
+      }
     }
 
     update_post_meta($post_id, 'edc_' . $key, $val);

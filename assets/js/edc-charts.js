@@ -32,19 +32,21 @@
   }
 
   /**
-   * Format a number for axis/tooltip display: at most 1 decimal (e.g. 22.4 or 22).
+   * Format a number for axis/tooltip display: up to 3 decimal places, no trailing zeros.
+   * Does not round beyond 3 decimals (e.g. 22.5 stays 22.5, 22.567 stays 22.567).
    * @param {*} value - Value (number or string).
    * @returns {string} Formatted string or empty if not a finite number.
    */
-  function roundToMax1Decimal(value) {
+  function formatNumberMax3Decimals(value) {
     const num = typeof value === "number" ? value : parseFloat(value, 10);
     if (!Number.isFinite(num)) return "";
-    const rounded = Math.round(num * 10) / 10;
-    return rounded % 1 === 0 ? String(Math.round(rounded)) : rounded.toFixed(1);
+    const rounded = Math.round(num * 1000) / 1000;
+    if (rounded % 1 === 0) return String(Math.round(rounded));
+    return rounded.toFixed(3).replace(/\.?0+$/, "");
   }
 
   /**
-   * Format a numeric value for table display (optional thousands separator).
+   * Format a numeric value for table display (optional thousands separator, up to 3 decimals).
    * @param {*} value - Value (number or string).
    * @returns {string}
    */
@@ -52,7 +54,7 @@
     if (value === null || typeof value === "undefined") return "";
     const num = typeof value === "number" ? value : parseFloat(String(value).replace(/\./g, "").replace(",", "."), 10);
     if (!Number.isFinite(num)) return String(value);
-    return num.toLocaleString("it-IT", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    return num.toLocaleString("it-IT", { minimumFractionDigits: 0, maximumFractionDigits: 3 });
   }
 
   /**
@@ -283,7 +285,7 @@
       tooltip: {
         trigger: "axis",
         axisPointer: { type: (chartType === "line") ? "line" : "shadow" },
-        valueFormatter: (value) => fmtValue(roundToMax1Decimal(value), valuePrefix, valueSuffix),
+        valueFormatter: (value) => fmtValue(formatNumberMax3Decimals(value), valuePrefix, valueSuffix),
       },
       legend: {
         show: datasets.length > 1,
@@ -304,7 +306,7 @@
         type: "value",
         name: yLabel || "",
         axisLabel: {
-          formatter: (value) => roundToMax1Decimal(value),
+          formatter: (value) => formatNumberMax3Decimals(value),
         },
       },
       series,
@@ -387,7 +389,7 @@
           return;
         }
 
-        if (chartType === "table_tabs_year") {
+        if (chartType === "table_tabs_year" || chartType === "table_tabs_year_unified_date") {
           renderTableTabsYearType(payload, container);
           return;
         }

@@ -126,6 +126,34 @@ msgstr ""
 msgid "Bar"
 msgstr ""
 
+#: includes/admin.php:86
+msgid "Tab per anno (mese/valore)"
+msgstr ""
+
+#: includes/admin.php:87
+msgid "Tab per anno mese/valore data unificata"
+msgstr ""
+
+#: includes/admin.php:100
+msgid "Colonna anno"
+msgstr ""
+
+#: includes/admin.php:104
+msgid "Colonna mese"
+msgstr ""
+
+#: includes/admin.php:108
+msgid "Colonna valore"
+msgstr ""
+
+#: includes/admin.php:118
+msgid "Colonna data"
+msgstr ""
+
+#: includes/admin.php:127
+msgid "La colonna data può essere in formato ISO (es. 2024-03-15) o gg/mm/aaaa. Anno e mese vengono estratti automaticamente."
+msgstr ""
+
 #: includes/admin.php:105
 msgid "Riempimento area sotto le linee"
 msgstr ""
@@ -264,6 +292,70 @@ msgstr ""
 
 #: includes/helpers.php:175
 msgid "Series %s"
+msgstr ""
+
+#: includes/helpers.php:99
+msgid "Gennaio"
+msgstr ""
+
+#: includes/helpers.php:100
+msgid "Febbraio"
+msgstr ""
+
+#: includes/helpers.php:101
+msgid "Marzo"
+msgstr ""
+
+#: includes/helpers.php:102
+msgid "Aprile"
+msgstr ""
+
+#: includes/helpers.php:103
+msgid "Maggio"
+msgstr ""
+
+#: includes/helpers.php:104
+msgid "Giugno"
+msgstr ""
+
+#: includes/helpers.php:105
+msgid "Luglio"
+msgstr ""
+
+#: includes/helpers.php:106
+msgid "Agosto"
+msgstr ""
+
+#: includes/helpers.php:107
+msgid "Settembre"
+msgstr ""
+
+#: includes/helpers.php:108
+msgid "Ottobre"
+msgstr ""
+
+#: includes/helpers.php:109
+msgid "Novembre"
+msgstr ""
+
+#: includes/helpers.php:110
+msgid "Dicembre"
+msgstr ""
+
+#: includes/admin.php
+msgid "Range date"
+msgstr ""
+
+#: includes/admin.php
+msgid "Data inizio"
+msgstr ""
+
+#: includes/admin.php
+msgid "Data fine"
+msgstr ""
+
+#: includes/admin.php
+msgid "Solo data inizio = da quella data in poi. Con data fine = solo righe nel periodo. Lasciare vuoto per non filtrare."
 msgstr ""
 
 #: includes/rest.php:35
