@@ -128,6 +128,34 @@ msgstr "Linea"
 msgid "Bar"
 msgstr "Barre"
 
+#: includes/admin.php:86
+msgid "Tab per anno (mese/valore)"
+msgstr "Tab per anno (mese/valore)"
+
+#: includes/admin.php:87
+msgid "Tab per anno mese/valore data unificata"
+msgstr "Tab per anno mese/valore data unificata"
+
+#: includes/admin.php:100
+msgid "Colonna anno"
+msgstr "Colonna anno"
+
+#: includes/admin.php:104
+msgid "Colonna mese"
+msgstr "Colonna mese"
+
+#: includes/admin.php:108
+msgid "Colonna valore"
+msgstr "Colonna valore"
+
+#: includes/admin.php:118
+msgid "Colonna data"
+msgstr "Colonna data"
+
+#: includes/admin.php:127
+msgid "La colonna data può essere in formato ISO (es. 2024-03-15) o gg/mm/aaaa. Anno e mese vengono estratti automaticamente."
+msgstr "La colonna data può essere in formato ISO (es. 2024-03-15) o gg/mm/aaaa. Anno e mese vengono estratti automaticamente."
+
 #: includes/admin.php:105
 msgid "Riempimento area sotto le linee"
 msgstr "Riempimento area sotto le linee"
@@ -267,6 +295,70 @@ msgstr "Il CSV non contiene righe."
 #: includes/helpers.php:175
 msgid "Series %s"
 msgstr "Serie %s"
+
+#: includes/helpers.php:99
+msgid "Gennaio"
+msgstr "Gennaio"
+
+#: includes/helpers.php:100
+msgid "Febbraio"
+msgstr "Febbraio"
+
+#: includes/helpers.php:101
+msgid "Marzo"
+msgstr "Marzo"
+
+#: includes/helpers.php:102
+msgid "Aprile"
+msgstr "Aprile"
+
+#: includes/helpers.php:103
+msgid "Maggio"
+msgstr "Maggio"
+
+#: includes/helpers.php:104
+msgid "Giugno"
+msgstr "Giugno"
+
+#: includes/helpers.php:105
+msgid "Luglio"
+msgstr "Luglio"
+
+#: includes/helpers.php:106
+msgid "Agosto"
+msgstr "Agosto"
+
+#: includes/helpers.php:107
+msgid "Settembre"
+msgstr "Settembre"
+
+#: includes/helpers.php:108
+msgid "Ottobre"
+msgstr "Ottobre"
+
+#: includes/helpers.php:109
+msgid "Novembre"
+msgstr "Novembre"
+
+#: includes/helpers.php:110
+msgid "Dicembre"
+msgstr "Dicembre"
+
+#: includes/admin.php
+msgid "Range date"
+msgstr "Range date"
+
+#: includes/admin.php
+msgid "Data inizio"
+msgstr "Data inizio"
+
+#: includes/admin.php
+msgid "Data fine"
+msgstr "Data fine"
+
+#: includes/admin.php
+msgid "Solo data inizio = da quella data in poi. Con data fine = solo righe nel periodo. Lasciare vuoto per non filtrare."
+msgstr "Solo data inizio = da quella data in poi. Con data fine = solo righe nel periodo. Lasciare vuoto per non filtrare."
 
 #: includes/rest.php:35
 msgid "Chart not found."

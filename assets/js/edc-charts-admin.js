@@ -134,15 +134,27 @@
   var chartTypeSelect = document.getElementById('edc_chart_type');
   var fieldTableTitle = document.getElementById('edc-field-table-title');
   var fieldTabsYear = document.getElementById('edc-field-tabs-year');
+  var fieldTabsYearUnified = document.getElementById('edc-field-tabs-year-unified');
 
   function toggleChartTypeFields() {
     var v = chartTypeSelect ? chartTypeSelect.value : 'line';
     if (fieldTableTitle) fieldTableTitle.style.display = (v === 'table') ? '' : 'none';
-    if (fieldTabsYear) fieldTabsYear.style.display = (v === 'table_tabs_year') ? '' : 'none';
+    if (fieldTabsYear) {
+      fieldTabsYear.style.display = (v === 'table_tabs_year') ? '' : 'none';
+      var yearInputs = fieldTabsYear.querySelectorAll('input');
+      yearInputs.forEach(function (el) { el.disabled = (v !== 'table_tabs_year'); });
+    }
+    if (fieldTabsYearUnified) {
+      fieldTabsYearUnified.style.display = (v === 'table_tabs_year_unified_date') ? '' : 'none';
+      var unifiedInputs = fieldTabsYearUnified.querySelectorAll('input');
+      unifiedInputs.forEach(function (el) { el.disabled = (v !== 'table_tabs_year_unified_date'); });
+    }
     var fieldHeaderColor = document.getElementById('edc-field-table-header-color');
     var fieldTabColor = document.getElementById('edc-field-tab-button-color');
-    if (fieldHeaderColor) fieldHeaderColor.style.display = (v === 'table' || v === 'table_tabs_year') ? '' : 'none';
-    if (fieldTabColor) fieldTabColor.style.display = (v === 'table_tabs_year') ? '' : 'none';
+    if (fieldHeaderColor) fieldHeaderColor.style.display = (v === 'table' || v === 'table_tabs_year' || v === 'table_tabs_year_unified_date') ? '' : 'none';
+    if (fieldTabColor) fieldTabColor.style.display = (v === 'table_tabs_year' || v === 'table_tabs_year_unified_date') ? '' : 'none';
+    var fieldDateRange = document.getElementById('edc-field-date-range');
+    if (fieldDateRange) fieldDateRange.style.display = (v === 'line' || v === 'bar' || v === 'table_tabs_year' || v === 'table_tabs_year_unified_date') ? '' : 'none';
   }
 
   if (chartTypeSelect) chartTypeSelect.addEventListener('change', toggleChartTypeFields);
